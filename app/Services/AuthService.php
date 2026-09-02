@@ -6,6 +6,7 @@ use App\Exceptions\Auth\InvalidCredentialsException;
 use App\Models\User;
 use App\Repositories\AuthRepository;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AuthService
 {
@@ -15,13 +16,18 @@ class AuthService
 
     public function register(array $data): array
     {
-        $user = $this->authRepository->createUser([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        return DB::transaction(function () use ($data): array {
+            $user = $this->authRepository->createUser([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
 
-        return $this->createAuthPayload($user);
+            $user->assignRole('student');
+            $this->authRepository->createStudentProfile($user);
+
+            return $this->createAuthPayload($user);
+        });
     }
 
     public function login(array $credentials): array

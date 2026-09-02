@@ -36,6 +36,7 @@ Route
 
 Before implementing a feature, read:
 
+- `docs/phases.md`
 - `docs/architecture.md`
 - `docs/core-domain.md`
 - `docs/authentication.md`

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Student;
 use App\Models\User;
 
 class AuthRepository
@@ -14,6 +15,11 @@ class AuthRepository
     public function findUserByEmail(string $email): ?User
     {
         return User::where('email', $email)->first();
+    }
+
+    public function createStudentProfile(User $user): Student
+    {
+        return $user->student()->create();
     }
 
     public function deleteCurrentToken(User $user): void
