@@ -78,7 +78,7 @@ Status: **Completed**
 
 ### Slice 1.3 — Roles and Permissions Administration
 
-Status: **Completed — pending commit**
+Status: **Completed**
 
 - Admin-only Role CRUD.
 - Admin-only Permission CRUD.
