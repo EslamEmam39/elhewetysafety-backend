@@ -55,7 +55,7 @@ integration.
 
 ### Slice 1.1 — Student Identity and Registration
 
-Status: **Completed — pending commit**
+Status: **Completed**
 
 - Student profile attached 1:1 to User.
 - Spatie `HasRoles` enabled on User.
@@ -66,7 +66,7 @@ Status: **Completed — pending commit**
 
 ### Slice 1.2 — Complete Authentication
 
-Status: **Planned**
+Status: **Completed — pending commit**
 
 - Send an email-verification OTP after registration.
 - Resend email-verification OTP with throttling.

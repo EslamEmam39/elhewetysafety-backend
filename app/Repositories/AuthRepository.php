@@ -26,4 +26,14 @@ class AuthRepository
     {
         $user->currentAccessToken()?->delete();
     }
+
+    public function updatePassword(User $user, string $password): void
+    {
+        $user->update(['password' => $password]);
+    }
+
+    public function revokeAllTokens(User $user): void
+    {
+        $user->tokens()->delete();
+    }
 }
