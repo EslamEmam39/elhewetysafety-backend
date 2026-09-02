@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AuthorizationAssignmentController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\PasswordResetController;
+use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\RoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -19,4 +22,11 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('throttle:3,1');
     Route::post('/email/verification/verify', [EmailVerificationController::class, 'verify'])
         ->middleware('throttle:6,1');
+
+    Route::middleware('role:admin')->prefix('admin')->group(function () {
+        Route::apiResource('roles', RoleController::class);
+        Route::apiResource('permissions', PermissionController::class);
+        Route::put('/roles/{role}/permissions', [AuthorizationAssignmentController::class, 'syncRolePermissions']);
+        Route::put('/users/{user}/roles', [AuthorizationAssignmentController::class, 'syncUserRoles']);
+    });
 });

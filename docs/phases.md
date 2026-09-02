@@ -66,7 +66,7 @@ Status: **Completed**
 
 ### Slice 1.2 — Complete Authentication
 
-Status: **Completed — pending commit**
+Status: **Completed**
 
 - Send an email-verification OTP after registration.
 - Resend email-verification OTP with throttling.
@@ -78,7 +78,7 @@ Status: **Completed — pending commit**
 
 ### Slice 1.3 — Roles and Permissions Administration
 
-Status: **Planned**
+Status: **Completed — pending commit**
 
 - Admin-only Role CRUD.
 - Admin-only Permission CRUD.
