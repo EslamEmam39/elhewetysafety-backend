@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EmailVerification\ResendEmailVerificationOtpRequest;
 use App\Http\Requests\EmailVerification\VerifyEmailOtpRequest;
 use App\Services\AuthService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class EmailVerificationController extends Controller
 {
@@ -17,9 +17,9 @@ class EmailVerificationController extends Controller
         private readonly AuthService $authService
     ) {}
 
-    public function resend(Request $request): JsonResponse
+    public function resend(ResendEmailVerificationOtpRequest $request): JsonResponse
     {
-        $this->authService->resendEmailVerificationOtp($request->user());
+        $this->authService->resendEmailVerificationOtp($request->validated('email'));
 
         return $this->successResponse(message: 'Verification code sent successfully');
     }
@@ -27,7 +27,7 @@ class EmailVerificationController extends Controller
     public function verify(VerifyEmailOtpRequest $request): JsonResponse
     {
         $this->authService->verifyEmail(
-            $request->user(),
+            $request->validated('email'),
             $request->validated('otp')
         );
 

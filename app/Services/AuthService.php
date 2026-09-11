@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Exceptions\Auth\EmailAlreadyVerifiedException;
+use App\Events\UserRegistered;
+use App\Events\UserEmailVerified;
+use App\Exceptions\Auth\EmailNotVerifiedException;
 use App\Exceptions\Auth\InvalidCredentialsException;
 use App\Exceptions\Otp\InvalidOtpException;
 use App\Models\OtpCode;
@@ -16,11 +19,12 @@ class AuthService
     public function __construct(
         private readonly AuthRepository $authRepository,
         private readonly OtpService $otpService
-    ) {}
+    ) {
+    }
 
-    public function register(array $data): array
+    public function register(array $data): User
     {
-        $auth = DB::transaction(function () use ($data): array {
+        return DB::transaction(function () use ($data): User {
             $user = $this->authRepository->createUser([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -30,23 +34,22 @@ class AuthService
             $user->assignRole('student');
             $this->authRepository->createStudentProfile($user);
 
-            return $this->createAuthPayload($user);
+            UserRegistered::dispatch($user->id);
+
+            return $user;
         });
-
-        $this->otpService->sendEmailVerificationOtp(
-            $auth['user']->email,
-            enforceCooldown: false
-        );
-
-        return $auth;
     }
 
     public function login(array $credentials): array
     {
         $user = $this->authRepository->findUserByEmail($credentials['email']);
 
-        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             throw new InvalidCredentialsException;
+        }
+
+        if (!$user->hasVerifiedEmail()) {
+            throw new EmailNotVerifiedException;
         }
 
         return $this->createAuthPayload($user);
@@ -57,8 +60,15 @@ class AuthService
         $this->authRepository->deleteCurrentToken($user);
     }
 
-    public function resendEmailVerificationOtp(User $user): void
+    public function resendEmailVerificationOtp(string $email): void
     {
+        $user = $this->authRepository->findUserByEmail($email);
+
+        // Return the same public response for an unknown email address.
+        if (!$user) {
+            return;
+        }
+
         if ($user->hasVerifiedEmail()) {
             throw new EmailAlreadyVerifiedException;
         }
@@ -66,8 +76,14 @@ class AuthService
         $this->otpService->sendEmailVerificationOtp($user->email);
     }
 
-    public function verifyEmail(User $user, string $otp): void
+    public function verifyEmail(string $email, string $otp): void
     {
+        $user = $this->authRepository->findUserByEmail($email);
+
+        if (!$user) {
+            throw new InvalidOtpException;
+        }
+
         if ($user->hasVerifiedEmail()) {
             throw new EmailAlreadyVerifiedException;
         }
@@ -79,6 +95,7 @@ class AuthService
         );
 
         $user->markEmailAsVerified();
+        UserEmailVerified::dispatch($user->id);
     }
 
     public function sendPasswordResetOtp(string $email): void
@@ -94,7 +111,7 @@ class AuthService
     {
         $user = $this->authRepository->findUserByEmail($data['email']);
 
-        if (! $user) {
+        if (!$user) {
             throw new InvalidOtpException;
         }
 

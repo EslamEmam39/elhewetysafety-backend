@@ -21,11 +21,10 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request): JsonResponse
     {
-        $auth = $this->authService->register($request->validated());
+        $user = $this->authService->register($request->validated());
 
         return $this->successResponse([
-            'user' => UserResource::make($auth['user']),
-            'token' => $auth['token'],
+            'user' => UserResource::make($user),
         ], 'Account created successfully', 201);
     }
 

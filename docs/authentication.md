@@ -35,18 +35,29 @@ Token creation belongs to the authentication application layer.
 ## Registration
 
 Registration validates input, creates the User, assigns the `student` role,
-creates a Student profile when required, and returns a public Resource.
+creates a Student profile when required, and returns a public Resource. It does
+not issue a Sanctum token; a user must verify their email before signing in.
 
 User creation, role assignment, and Student creation must use a database
 transaction when they form one operation.
 
-Registration sends a short-lived email-verification OTP. The OTP must be
+Registration dispatches a `UserRegistered` event after the transaction commits.
+Its listener queues the email-verification OTP job, so email delivery never
+blocks registration. The OTP must be
 hashed at rest, single-use, purpose-specific, attempt-limited, and invalidated
 when a replacement is issued.
 
 ## Email Verification
 
 Users verify their email with an OTP sent to their registered address.
+
+The resend and verification endpoints accept the user's email address and are
+public so a user without a token can finish verification. Login rejects an
+unverified user with a `403` response.
+
+After successful email verification, a `UserEmailVerified` event queues a
+password-reset OTP. The client takes the user to the password-reset screen to
+complete this required step before their first login.
 
 - Verification and resend endpoints must be rate limited.
 - A successful verification sets `email_verified_at` once.
