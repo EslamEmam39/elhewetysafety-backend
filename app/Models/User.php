@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -22,9 +23,15 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'username',
+        'phone',
+        'full_name_en',
+        'full_name_ar',
         'email',
         'password',
+        'is_banned',
+        'ban_reason',
+        'targeted_professional_field_id',
     ];
 
     /**
@@ -47,11 +54,17 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_banned' => 'boolean',
         ];
     }
 
     public function student(): HasOne
     {
         return $this->hasOne(Student::class);
+    }
+
+    public function targetedProfessionalField(): BelongsTo
+    {
+        return $this->belongsTo(TargetedProfessionalField::class);
     }
 }

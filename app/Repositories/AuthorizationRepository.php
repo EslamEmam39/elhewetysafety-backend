@@ -61,6 +61,26 @@ class AuthorizationRepository
         return $role->refresh()->load('permissions');
     }
 
+    public function banUser(User $user, string $reason): User
+    {
+        $user->update([
+            'is_banned' => true,
+            'ban_reason' => $reason,
+        ]);
+
+        return $user->refresh()->load(['roles', 'targetedProfessionalField']);
+    }
+
+    public function unbanUser(User $user): User
+    {
+        $user->update([
+            'is_banned' => false,
+            'ban_reason' => null,
+        ]);
+
+        return $user->refresh()->load(['roles', 'targetedProfessionalField']);
+    }
+
     public function syncUserRoles(User $user, array $roleIds): User
     {
         $roles = Role::query()->whereIn('id', $roleIds)->get();

@@ -7,7 +7,9 @@
 - JSON REST API consumed by a Next.js frontend.
 - Authentication: Laravel Sanctum using Bearer Tokens.
 - Authorization: `spatie/laravel-permission`.
-- API routes belong in `routes/api.php`.
+- Public and authentication API routes belong in `routes/api.php`.
+- Admin-only API routes belong in `routes/admin.php` and are imported by `routes/api.php`.
+- Admin-only controllers belong in `app/Http/Controllers/Api/Admin`.
 - Development runs through Docker Compose.
 
 ## Required Architecture
@@ -51,6 +53,18 @@ Before implementing a feature, read:
 5. Preserve unrelated user changes.
 6. Avoid overengineering.
 7. Update the relevant documentation when a reusable architectural decision changes.
+
+## Documentation Completion Guard
+
+- Use the `backend-doc-sync` skill for every implementation task that changes a
+  feature, database schema, API contract, authentication behavior, domain rule,
+  architecture, or roadmap scope.
+- Before declaring an implementation complete, inspect the task's diff and
+  update every affected file listed under Required Reading in the same turn.
+- Do not wait for the user to request documentation updates and do not leave
+  documentation synchronization as a follow-up job.
+- If no Required Reading file needs a change, state the reason in the final
+  response.
 
 ## Docker
 

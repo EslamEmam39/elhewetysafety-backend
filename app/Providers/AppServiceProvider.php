@@ -6,6 +6,8 @@ use App\Events\UserRegistered;
 use App\Events\UserEmailVerified;
 use App\Listeners\QueueEmailVerificationOtp;
 use App\Listeners\QueuePasswordResetOtp;
+use App\Models\User;
+use App\Observers\UserObserver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        User::observe(UserObserver::class);
+
         Event::listen(UserRegistered::class, QueueEmailVerificationOtp::class);
         Event::listen(UserEmailVerified::class, QueuePasswordResetOtp::class);
     }

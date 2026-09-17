@@ -17,7 +17,11 @@ class RegisterRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'min:3', 'max:50', 'regex:/^[A-Za-z0-9_]+$/', 'unique:users,username'],
+            'phone' => ['required', 'string', 'max:32', 'unique:users,phone'],
+            'full_name_en' => ['required', 'string', 'max:255'],
+            'full_name_ar' => ['required', 'string', 'max:255'],
+            'targeted_professional_field_uuid' => ['required', 'uuid', 'exists:targeted_professional_fields,uuid'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];

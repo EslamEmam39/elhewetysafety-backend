@@ -7,10 +7,13 @@ use App\Events\UserRegistered;
 use App\Events\UserEmailVerified;
 use App\Exceptions\Auth\EmailNotVerifiedException;
 use App\Exceptions\Auth\InvalidCredentialsException;
+use App\Exceptions\Auth\TargetedProfessionalFieldUnavailableException;
+use App\Exceptions\Auth\UserBannedException;
 use App\Exceptions\Otp\InvalidOtpException;
 use App\Models\OtpCode;
 use App\Models\User;
 use App\Repositories\AuthRepository;
+use App\Repositories\TargetedProfessionalFieldRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,15 +21,26 @@ class AuthService
 {
     public function __construct(
         private readonly AuthRepository $authRepository,
-        private readonly OtpService $otpService
+        private readonly OtpService $otpService,
+        private readonly TargetedProfessionalFieldRepository $targetedProfessionalFieldRepository
     ) {
     }
 
     public function register(array $data): User
     {
         return DB::transaction(function () use ($data): User {
+            $targetedProfessionalField = $this->targetedProfessionalFieldRepository
+                ->findActiveByUuid($data['targeted_professional_field_uuid']);
+
+            if (! $targetedProfessionalField) {
+                throw new TargetedProfessionalFieldUnavailableException;
+            }
             $user = $this->authRepository->createUser([
-                'name' => $data['name'],
+                'username' => $data['username'],
+                'phone' => $data['phone'],
+                'full_name_en' => $data['full_name_en'],
+                'full_name_ar' => $data['full_name_ar'],
+                'targeted_professional_field_id' => $targetedProfessionalField->id,
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
             ]);
@@ -36,7 +50,7 @@ class AuthService
 
             UserRegistered::dispatch($user->id);
 
-            return $user;
+            return $this->authRepository->loadPublicProfile($user);
         });
     }
 
@@ -48,16 +62,24 @@ class AuthService
             throw new InvalidCredentialsException;
         }
 
+        if ($user->is_banned) {
+            throw new UserBannedException($user->ban_reason);
+        }
         if (!$user->hasVerifiedEmail()) {
             throw new EmailNotVerifiedException;
         }
 
-        return $this->createAuthPayload($user);
+        return $this->createAuthPayload($this->authRepository->loadPublicProfile($user));
     }
 
     public function logout(User $user): void
     {
         $this->authRepository->deleteCurrentToken($user);
+    }
+
+    public function authenticatedUser(User $user): User
+    {
+        return $this->authRepository->loadPublicProfile($user);
     }
 
     public function resendEmailVerificationOtp(string $email): void

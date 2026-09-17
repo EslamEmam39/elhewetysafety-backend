@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\BusinessException;
+use App\Http\Middleware\EnsureUserIsNotBanned;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role' => RoleMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
+            'not_banned' => EnsureUserIsNotBanned::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

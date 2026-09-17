@@ -23,6 +23,7 @@ Service Result
 
 ```text
 app/Http/Controllers/Api
+app/Http/Controllers/Api/Admin
 app/Http/Requests/{Feature}
 app/Http/Resources
 app/Services
@@ -30,6 +31,12 @@ app/Repositories
 app/Exceptions/{Feature}
 app/Traits
 ```
+
+Public and authentication API routes are defined in `routes/api.php`.
+Admin-only controllers live under `app/Http/Controllers/Api/Admin`.
+Admin-only API routes are defined in `routes/admin.php`, imported by
+`routes/api.php`, and grouped under `/api/admin` with `auth:sanctum`,
+`not_banned`, and `role:admin` middleware.
 
 ## Controllers
 
@@ -67,6 +74,13 @@ implementations or real substitution is required.
 Models contain relationships, casts, attributes, and small model-specific
 behavior. Multi-model workflows do not belong in Models.
 
+## Observers
+
+Observers may enforce model lifecycle invariants that must apply regardless of
+which Service or Repository creates the model. `UserObserver` assigns a UUID
+when a User is created or saved without one. Database migrations remain
+responsible for backfilling existing rows.
+
 ## API Resources
 
 Never expose Eloquent models directly through the public API. Resources define
@@ -81,6 +95,9 @@ such as `app/Exceptions/Auth`, `Course`, `Payment`, and `Enrollment`.
 They extend `App\Exceptions\BusinessException` and are thrown by Services. The
 global renderer in `bootstrap/app.php` converts them into unified JSON errors.
 Controllers do not catch each exception unless recovery is endpoint-specific.
+
+Authenticated routes use the `not_banned` middleware after `auth:sanctum` so
+account moderation is enforced consistently outside individual controllers.
 
 ## Unified API Responses
 

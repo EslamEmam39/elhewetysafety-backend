@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\Authorization\CannotBanSelfException;
 use App\Exceptions\Authorization\ProtectedSystemRoleException;
 use App\Models\User;
 use App\Repositories\AuthorizationRepository;
@@ -73,6 +74,20 @@ class AuthorizationService
     public function syncUserRoles(User $user, array $roleIds): User
     {
         return $this->authorizationRepository->syncUserRoles($user, $roleIds);
+    }
+
+    public function banUser(User $administrator, User $user, string $reason): User
+    {
+        if ($administrator->is($user)) {
+            throw new CannotBanSelfException;
+        }
+
+        return $this->authorizationRepository->banUser($user, $reason);
+    }
+
+    public function unbanUser(User $user): User
+    {
+        return $this->authorizationRepository->unbanUser($user);
     }
 
     private function isSystemRole(Role $role): bool

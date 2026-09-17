@@ -7,6 +7,7 @@ Phase 1 focuses only on the Core System.
 ```text
 users
 students
+targeted_professional_fields
 courses
 chapters
 lessons
@@ -23,10 +24,33 @@ lesson_progress
 `User` is the authentication identity and owns Spatie roles and permissions.
 Do not add a duplicate role column.
 
+`User` keeps a numeric internal primary key for database relationships and a
+unique UUID for public references. Its identity fields are unique `username`,
+`phone`, and `email`. Localized names are stored as `full_name_en` and
+`full_name_ar`; there is no generic `name` field.
+
+Account moderation state is stored in `is_banned` with an optional
+`ban_reason`. Ban enforcement belongs in the authentication and authorization
+application flows rather than in controllers.
+
+Admins may ban or unban Users. Banned Users cannot log in or use authenticated
+API routes, and receive a `403` response containing the stored reason when one
+is present. Administrators cannot ban themselves.
+
 `Student` is a 1:1 profile attached to User. A User may exist without a Student
 profile, for example an Admin. Students do not have separate authentication.
 
 Initial roles are `admin` and `student`.
+
+## Targeted Professional Fields
+
+A TargetedProfessionalField is reference data selected by a User during
+registration. One field may be selected by many Users, while each registered
+User selects one field.
+
+Only active fields are offered publicly and accepted for new registrations.
+Fields have localized English and Arabic names, a stable unique code, a public
+UUID, and `sort_order` for deterministic display.
 
 ## Course Content
 

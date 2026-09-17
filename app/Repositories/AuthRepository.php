@@ -32,6 +32,11 @@ class AuthRepository
         $user->update(['password' => $password]);
     }
 
+    public function loadPublicProfile(User $user): User
+    {
+        return $user->loadMissing(['roles', 'targetedProfessionalField']);
+    }
+
     public function revokeAllTokens(User $user): void
     {
         $user->tokens()->delete();

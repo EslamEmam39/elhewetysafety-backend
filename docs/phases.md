@@ -64,6 +64,15 @@ Status: **Completed**
   a token inside one database transaction.
 - PostgreSQL `students.user_id` unique constraint.
 
+### Slice 1.1a — Targeted Professional Fields
+
+Status: **In Progress**
+
+- Localized professional-field reference data.
+- Public list of active fields for registration.
+- Registration requires one active field and stores it on the User.
+- Existing Users remain nullable during migration.
+
 ### Slice 1.2 — Complete Authentication
 
 Status: **Completed**
@@ -86,6 +95,15 @@ Status: **Completed**
 - Assign and synchronize Permissions for Roles.
 - Protect management endpoints using Spatie authorization.
 - Protect system roles from unsafe deletion or renaming.
+
+### Slice 1.3a — User Moderation
+
+Status: **In Progress**
+
+- Admin-only ban and unban operations by User UUID.
+- Required ban reason.
+- Login and authenticated-route enforcement for banned Users.
+- Administrators cannot ban themselves.
 
 ### Slice 1.4 — Course Catalog
 
