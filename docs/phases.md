@@ -60,8 +60,9 @@ Status: **Completed**
 - Student profile attached 1:1 to User.
 - Spatie `HasRoles` enabled on User.
 - Initial `admin` and `student` roles.
-- Registration creates User, assigns student role, creates Student, and issues
-  a token inside one database transaction.
+- Registration creates User, assigns student role, and creates Student inside
+  one database transaction. Authentication tokens are issued only after email
+  verification and successful login.
 - PostgreSQL `students.user_id` unique constraint.
 
 ### Slice 1.1a — Targeted Professional Fields
@@ -94,7 +95,11 @@ Status: **Completed**
 - Assign and synchronize Roles for Users.
 - Assign and synchronize Permissions for Roles.
 - Protect management endpoints using Spatie authorization.
+- Laravel Policies map admin operations to granular Spatie permissions.
 - Protect system roles from unsafe deletion or renaming.
+- Dedicated admin login endpoint reusing the shared authentication flow.
+- Admin User listing, filtering, detail, and identity update by public UUID.
+- User deletion is excluded to preserve future financial and learning history.
 
 ### Slice 1.3a — User Moderation
 
@@ -105,17 +110,34 @@ Status: **In Progress**
 - Login and authenticated-route enforcement for banned Users.
 - Administrators cannot ban themselves.
 
+### Slice 1.3b — Student Profile and Location Reference Data
+
+Status: **In Progress**
+
+- Normalized Countries and Cities reference data.
+- A City belongs to one Country; a Student references one optional City.
+- Student profile fields for avatar storage key, job title, company, and biography.
+- Public active Country and City lookup APIs for profile forms.
+- Admin management APIs deactivate referenced locations instead of deleting them.
+- Admin Student profile listing, detail, update, and deletion by User UUID.
+
 ### Slice 1.4 — Course Catalog
 
-Status: **Planned**
+Status: **In Progress**
 
-- Courses.
+- Normalized Course categories.
+- Courses linked to one category.
+- Finalize the instructor profile and Course relationship without duplicate
+  authentication.
 - Chapters ordered by `sort_order`.
 - Lessons ordered by `sort_order`.
 - Publication state.
+- Course level: beginner, intermediate, or advanced.
 - Decimal Course price and currency.
 - Private video storage keys and processing status only.
 - Public read API for published Course content.
+- Admin CRUD for categories, Courses, Chapters, and Lessons.
+- Spatie-backed Policies protect every administration operation.
 
 ### Slice 1.5 — Payment Gateway Foundation
 
@@ -151,6 +173,7 @@ Status: **Planned**
 - `UNIQUE(user_id, course_id)` prevents duplicate access records.
 - Verified payment success atomically marks Payment paid, marks Order paid,
   and creates Enrollment.
+- Published free Courses create Enrollment directly without an Order or Payment.
 - Backend authorization verifies Course ownership.
 
 ### Slice 1.9 — Devices
@@ -177,7 +200,8 @@ Status: **Planned**
 - Admins can manage and assign Roles and Permissions.
 - Published Course structure can be read.
 - An Order can have multiple Payment attempts.
-- Only verified successful payment processing can create Enrollment.
+- Only verified successful payment processing can create paid-Course Enrollment.
+- A published free Course can create Enrollment without an Order or Payment.
 - A User cannot receive duplicate Enrollment for one Course.
 - Enrolled users can access Course content and update Lesson progress.
 - Device records can be created, updated, and revoked.

@@ -6,7 +6,6 @@ use Database\Factories\TargetedProfessionalFieldFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 class TargetedProfessionalField extends Model
 {
@@ -27,15 +26,6 @@ class TargetedProfessionalField extends Model
             'is_active' => 'boolean',
             'sort_order' => 'integer',
         ];
-    }
-
-    protected static function booted(): void
-    {
-        static::creating(function (self $field): void {
-            if (blank($field->getAttribute('uuid'))) {
-                $field->setAttribute('uuid', (string) Str::uuid());
-            }
-        });
     }
 
     public function users(): HasMany

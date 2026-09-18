@@ -8,8 +8,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Chapter extends Model
 {
-    protected $fillable = ['course_id', 'title', 'sort_order'];
+    protected $fillable = ['course_id', 'code', 'title', 'sort_order'];
+    public function getRouteKeyName(): string
+    {
+        return 'code';
+    }
 
-    public function course(): BelongsTo { return $this->belongsTo(Course::class); }
-    public function lessons(): HasMany { return $this->hasMany(Lesson::class)->orderBy('sort_order'); }
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
+    }
+    public function lessons(): HasMany
+    {
+        return $this->hasMany(Lesson::class)->orderBy('sort_order');
+    }
 }

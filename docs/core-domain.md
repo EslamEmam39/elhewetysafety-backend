@@ -7,7 +7,10 @@ Phase 1 focuses only on the Core System.
 ```text
 users
 students
+countries
+cities
 targeted_professional_fields
+course_categories
 courses
 chapters
 lessons
@@ -37,8 +40,23 @@ Admins may ban or unban Users. Banned Users cannot log in or use authenticated
 API routes, and receive a `403` response containing the stored reason when one
 is present. Administrators cannot ban themselves.
 
+Admins may list, search, filter, view, and update User identity data by public
+UUID. Changing a User email clears `email_verified_at`. User deletion is not part
+of administration because historical financial and learning relationships must
+be preserved.
+
 `Student` is a 1:1 profile attached to User. A User may exist without a Student
 profile, for example an Admin. Students do not have separate authentication.
+Administrators may list, view, update, and delete Student profiles by the owning
+User UUID. Deleting a Student profile removes the `student` role but preserves
+the User authentication identity and its history.
+
+Student-specific optional profile data includes avatar storage key, job title,
+company, and biography. Location is normalized: `students.city_id` references a
+City, and each City belongs to a Country. Do not store a reusable city or country
+name directly on Student.
+Only active Countries and Cities are offered publicly. Referenced locations are
+deactivated rather than deleted, and profile updates reject inactive selections.
 
 Initial roles are `admin` and `student`.
 
@@ -49,21 +67,29 @@ registration. One field may be selected by many Users, while each registered
 User selects one field.
 
 Only active fields are offered publicly and accepted for new registrations.
-Fields have localized English and Arabic names, a stable unique code, a public
-UUID, and `sort_order` for deterministic display.
+Fields have localized English and Arabic names, a stable unique code, and
+`sort_order` for deterministic display. UUIDs are reserved for Users.
 
 ## Course Content
 
 A Course is the purchased product. Core fields include title, slug,
-description, decimal price, currency, thumbnail, publication state, and
-publication time.
+description, decimal price, currency, level, thumbnail, publication state, and
+publication time. A Course belongs to one CourseCategory for catalog filtering.
+The instructor relationship must be finalized before the Course Catalog slice
+is implemented; instructor identity reuses User authentication through nullable
+`courses.instructor_id` rather than creating a second login system. Existing
+Courses may remain uncategorized or without an instructor during migration;
+new Courses require an active CourseCategory.
 
 ```text
 Course 1 ── M Chapters
 Chapter 1 ── M Lessons
+CourseCategory 1 ── M Courses
 ```
 
 Chapters and Lessons use `sort_order`.
+Courses expose `slug`; Chapters and Lessons expose globally unique stable
+`code` values. Their numeric primary keys remain internal.
 
 Lessons store private storage keys rather than permanent public URLs:
 `video_s3_key`, `video_hls_manifest_key`, `video_status`, `duration_seconds`,
@@ -104,9 +130,10 @@ between Users and Courses.
 UNIQUE(user_id, course_id)
 ```
 
-A student buys a Course once. Access is lifetime without subscriptions or
-expiration. Enrollment is created only after verified successful payment.
-Possible states are `active` and `revoked`.
+A student enrolls in a Course once. Access is lifetime without subscriptions or
+expiration. A paid Course creates Enrollment only after verified successful
+payment. A free Course may create Enrollment directly without an Order or
+Payment. Possible states are `active` and `revoked`.
 
 ## Purchase Flow
 
@@ -127,6 +154,15 @@ Student
 Order = Purchase
 Payment = Payment attempt
 Enrollment = Course access
+```
+
+For a free Course (`price = 0`), the flow is:
+
+```text
+Student
+→ Published free Course
+→ Create Enrollment
+→ Lifetime Course Access
 ```
 
 ## Devices

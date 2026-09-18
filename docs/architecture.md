@@ -22,18 +22,28 @@ Service Result
 ## Directories
 
 ```text
-app/Http/Controllers/Api
-app/Http/Controllers/Api/Admin
+app/Http/Controllers/Api/{Feature}
+app/Http/Controllers/Api/Admin/{Feature}
 app/Http/Requests/{Feature}
-app/Http/Resources
-app/Services
-app/Repositories
+app/Http/Resources/{Feature}
+app/Services/{Feature}
+app/Repositories/{Feature}
 app/Exceptions/{Feature}
 app/Traits
 ```
 
 Public and authentication API routes are defined in `routes/api.php`.
-Admin-only controllers live under `app/Http/Controllers/Api/Admin`.
+Controllers are grouped by feature. Public controllers live under
+`app/Http/Controllers/Api/{Feature}`, while admin-only controllers live under
+`app/Http/Controllers/Api/Admin/{Feature}`. Do not place new feature controllers
+directly in the `Api` or `Admin` root when a feature directory applies.
+Services and Repositories follow the same feature grouping under
+`app/Services/{Feature}` and `app/Repositories/{Feature}`. Public and admin
+operations for the same domain feature share that feature directory; the class
+name may retain an `Admin` prefix when its behavior is administration-specific.
+FormRequests and API Resources are also grouped by feature under
+`app/Http/Requests/{Feature}` and `app/Http/Resources/{Feature}`. Shared base
+classes such as `ApiFormRequest` remain at the layer root.
 Admin-only API routes are defined in `routes/admin.php`, imported by
 `routes/api.php`, and grouped under `/api/admin` with `auth:sanctum`,
 `not_banned`, and `role:admin` middleware.
@@ -98,6 +108,18 @@ Controllers do not catch each exception unless recovery is endpoint-specific.
 
 Authenticated routes use the `not_banned` middleware after `auth:sanctum` so
 account moderation is enforced consistently outside individual controllers.
+
+## Policies and Spatie Permissions
+
+Admin routes keep the `role:admin` middleware as the coarse entry boundary.
+Controllers authorize each resource action through Laravel Policies. Policies
+use Spatie `checkPermissionTo` for fine-grained decisions; Controllers and
+Services do not hard-code permission checks. Services retain domain invariants
+such as preventing self-ban even when a Policy has already authorized access.
+
+Controllers call the matching Policy ability before invoking Services, including
+custom operations such as ban, unban, role assignment, and permission
+synchronization.
 
 ## Unified API Responses
 

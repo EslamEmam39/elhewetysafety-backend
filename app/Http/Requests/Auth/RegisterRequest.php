@@ -21,7 +21,7 @@ class RegisterRequest extends ApiFormRequest
             'phone' => ['required', 'string', 'max:32', 'unique:users,phone'],
             'full_name_en' => ['required', 'string', 'max:255'],
             'full_name_ar' => ['required', 'string', 'max:255'],
-            'targeted_professional_field_uuid' => ['required', 'uuid', 'exists:targeted_professional_fields,uuid'],
+            'targeted_professional_field_code' => ['required', 'string', 'max:50', 'exists:targeted_professional_fields,code'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];

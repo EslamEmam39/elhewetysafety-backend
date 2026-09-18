@@ -9,10 +9,20 @@ class Student extends Model
 {
     protected $fillable = [
         'user_id',
+        'city_id',
+        'avatar_storage_key',
+        'job_title',
+        'company',
+        'bio',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function city(): BelongsTo
+    {
+        return $this->belongsTo(City::class);
     }
 }

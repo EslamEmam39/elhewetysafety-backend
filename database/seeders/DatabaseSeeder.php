@@ -17,6 +17,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             TargetedProfessionalFieldSeeder::class,
+            LocationSeeder::class,
+            DemoUserSeeder::class,
+            CourseCategorySeeder::class,
+            CourseSeeder::class,
         ]);
     }
 }

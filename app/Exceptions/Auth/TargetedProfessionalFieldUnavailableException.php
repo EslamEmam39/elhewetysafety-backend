@@ -11,7 +11,7 @@ class TargetedProfessionalFieldUnavailableException extends BusinessException
         parent::__construct(
             'The selected targeted professional field is unavailable',
             422,
-            ['targeted_professional_field_uuid' => ['The selected targeted professional field is unavailable.']]
+            ['targeted_professional_field_code' => ['The selected targeted professional field is unavailable.']]
         );
     }
 }

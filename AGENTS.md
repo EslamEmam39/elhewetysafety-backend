@@ -9,7 +9,13 @@
 - Authorization: `spatie/laravel-permission`.
 - Public and authentication API routes belong in `routes/api.php`.
 - Admin-only API routes belong in `routes/admin.php` and are imported by `routes/api.php`.
-- Admin-only controllers belong in `app/Http/Controllers/Api/Admin`.
+- Controllers are grouped by feature under `app/Http/Controllers/Api/{Feature}`.
+- Admin-only controllers are grouped under `app/Http/Controllers/Api/Admin/{Feature}`.
+- Services are grouped by feature under `app/Services/{Feature}`.
+- Repositories are grouped by feature under `app/Repositories/{Feature}`.
+- FormRequests are grouped by feature under `app/Http/Requests/{Feature}`;
+  shared request base classes may remain at the Requests root.
+- API Resources are grouped by feature under `app/Http/Resources/{Feature}`.
 - Development runs through Docker Compose.
 
 ## Required Architecture
@@ -54,6 +60,21 @@ Before implementing a feature, read:
 6. Avoid overengineering.
 7. Update the relevant documentation when a reusable architectural decision changes.
 
+## Database Normalization Guard
+
+- Use the `database-normalization` skill whenever creating or modifying tables,
+  columns, relationships, migrations, or seeders.
+- Review every schema change against 1NF, 2NF, and 3NF before implementation.
+- Each project Domain table must have its own create-table migration file. Put
+  later alterations and foreign keys on existing tables in separate migrations.
+- Reusable reference data such as countries, cities, categories, professional
+  fields, and payment gateways belongs in normalized tables rather than repeated
+  free-text columns.
+- In project domain tables, UUID is reserved for `users`; expose stable `code`
+  or `slug` values for other entities and keep numeric IDs internal.
+- Preserve intentional historical snapshots for financial, order, invoice, and
+  certificate data when later reference-data changes must not rewrite history.
+
 ## Documentation Completion Guard
 
 - Use the `backend-doc-sync` skill for every implementation task that changes a
@@ -81,6 +102,19 @@ If `compose.yaml` is in the parent directory:
 ```bash
 docker compose -f ../compose.yaml exec backend php artisan migrate
 ```
+
+## Postman Synchronization Guard
+
+- The canonical Postman collection is
+  `postman/Course-Elhewetysafety.postman_collection.json`.
+- Whenever an API route is added, changed, renamed, or removed, update the
+  matching request in that JSON collection in the same turn.
+- Preserve the existing folder structure, request examples, variables, and
+  Bearer Token placeholder. Do not convert the collection into Postman YAML or
+  repository-directory format.
+- Before completion, compare the collection requests with
+  `php artisan route:list --path=api` and report any intentionally omitted
+  framework routes.
 
 ## Verification
 

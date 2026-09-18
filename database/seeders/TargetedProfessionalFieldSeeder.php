@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\TargetedProfessionalField;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class TargetedProfessionalFieldSeeder extends Seeder
 {
@@ -23,10 +22,6 @@ class TargetedProfessionalFieldSeeder extends Seeder
             $model = TargetedProfessionalField::query()->firstOrNew([
                 'code' => $field['code'],
             ]);
-
-            if (blank($model->getAttribute('uuid'))) {
-                $model->setAttribute('uuid', (string) Str::uuid());
-            }
 
             $model->fill($field + ['is_active' => true])->save();
         }
