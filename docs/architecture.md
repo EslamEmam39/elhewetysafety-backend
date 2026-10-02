@@ -79,6 +79,35 @@ methods such as `findUserByEmail`, `createOrder`, and `createEnrollment`.
 Do not create Repository interfaces automatically. Add one only when multiple
 implementations or real substitution is required.
 
+## Payment Provider Abstraction
+
+Real payment-provider integrations use one explicit interface with interchangeable
+service implementations:
+
+```text
+PaymentGatewayInterface
+        ↑
+PaymobService / FawryService
+        ↑
+PaymentGatewayFactory
+        ↑
+PaymentService
+```
+
+`PaymobService` and `FawryService` implement `PaymentGatewayInterface`.
+`PaymentGatewayFactory` selects the implementation from the gateway's stable
+code, and `PaymentService` owns orchestration, persistence coordination, and
+transactions. Provider services do not create Orders, update Enrollments, or
+construct HTTP responses. Provider secrets remain in environment-backed config.
+The concrete provider integrations are implemented in Phase 2, after the Core
+Order, Payment, and Enrollment foundations exist.
+
+Enrollment access follows the standard feature pipeline. `EnrollmentService`
+owns free-course eligibility, idempotent access creation, and administrative
+state transitions; `EnrollmentRepository` owns scoped persistence queries.
+The public Course catalog loads metadata only, while the protected content route
+loads Chapters and Lessons after the Service verifies an active Enrollment.
+
 ## Models
 
 Models contain relationships, casts, attributes, and small model-specific
@@ -108,6 +137,26 @@ Controllers do not catch each exception unless recovery is endpoint-specific.
 
 Authenticated routes use the `not_banned` middleware after `auth:sanctum` so
 account moderation is enforced consistently outside individual controllers.
+
+Device-aware authentication uses an application `PersonalAccessToken` model
+extending Sanctum's token model. `AuthService` coordinates credential checks,
+Device registration, token issuance, and token-to-Device association inside a
+transaction. Device persistence and revocation remain in `DeviceRepository`.
+The API middleware updates server-observed Device activity after authenticated
+requests; tokens created before the Device feature remain valid with a null
+Device relation.
+
+Lesson Progress follows the standard feature pipeline. `LessonProgressService`
+enforces active Enrollment access, duration bounds, and monotonic completion;
+`LessonProgressRepository` owns scoped reads and the single User/Lesson
+upsert. Controllers never accept a User identity or completion timestamp.
+
+Course Reviews follow the feature pipeline. `CourseReviewService` enforces
+published Course state, active Enrollment, ownership, and one-review rules;
+`CourseReviewRepository` owns review queries and moderation persistence.
+Course catalog queries calculate duration, Lesson count, active Enrollment
+count, and visible-review aggregates in SQL without loading every related row
+or storing duplicate summary columns.
 
 ## Policies and Spatie Permissions
 

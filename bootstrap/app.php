@@ -2,6 +2,7 @@
 
 use App\Exceptions\BusinessException;
 use App\Http\Middleware\EnsureUserIsNotBanned;
+use App\Http\Middleware\TouchDeviceActivity;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->appendToGroup('api', TouchDeviceActivity::class);
         $middleware->alias([
             'permission' => PermissionMiddleware::class,
             'role' => RoleMiddleware::class,

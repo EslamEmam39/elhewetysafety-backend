@@ -30,7 +30,7 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $auth = $this->authService->login($request->validated());
+        $auth = $this->authService->login($this->loginData($request));
 
         return $this->successResponse([
             'user' => UserResource::make($auth['user']),
@@ -40,7 +40,7 @@ class AuthController extends Controller
 
     public function adminLogin(LoginRequest $request): JsonResponse
     {
-        $auth = $this->authService->loginAdmin($request->validated());
+        $auth = $this->authService->loginAdmin($this->loginData($request));
 
         return $this->successResponse([
             'user' => UserResource::make($auth['user']),
@@ -62,5 +62,13 @@ class AuthController extends Controller
         return $this->successResponse([
             'user' => UserResource::make($this->authService->authenticatedUser($request->user())),
         ], 'Authenticated user retrieved successfully');
+    }
+
+    private function loginData(LoginRequest $request): array
+    {
+        return $request->validated() + [
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ];
     }
 }

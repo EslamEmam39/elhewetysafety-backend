@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Course extends Model
@@ -23,4 +24,9 @@ class Course extends Model
     public function getRouteKeyName(): string { return 'slug'; }
     public function category(): BelongsTo { return $this->belongsTo(CourseCategory::class, 'course_category_id'); }
     public function instructor(): BelongsTo { return $this->belongsTo(User::class, 'instructor_id'); }
+    public function orders(): HasMany { return $this->hasMany(Order::class); }
+    public function enrollments(): HasMany { return $this->hasMany(Enrollment::class); }
+    public function lessons(): HasManyThrough { return $this->hasManyThrough(Lesson::class, Chapter::class); }
+    public function reviews(): HasMany { return $this->hasMany(CourseReview::class); }
+    public function visibleReviews(): HasMany { return $this->reviews()->whereNull('hidden_at'); }
 }

@@ -4,7 +4,6 @@ namespace App\Services\Auth;
 
 use App\Exceptions\Auth\EmailAlreadyVerifiedException;
 use App\Events\UserRegistered;
-use App\Events\UserEmailVerified;
 use App\Exceptions\Auth\EmailNotVerifiedException;
 use App\Exceptions\Auth\InvalidCredentialsException;
 use App\Exceptions\Auth\TargetedProfessionalFieldUnavailableException;
@@ -14,6 +13,7 @@ use App\Models\OtpCode;
 use App\Models\User;
 use App\Repositories\Auth\AuthRepository;
 use App\Repositories\ProfessionalField\TargetedProfessionalFieldRepository;
+use App\Repositories\Device\DeviceRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,7 +22,8 @@ class AuthService
     public function __construct(
         private readonly AuthRepository $authRepository,
         private readonly OtpService $otpService,
-        private readonly TargetedProfessionalFieldRepository $targetedProfessionalFieldRepository
+        private readonly TargetedProfessionalFieldRepository $targetedProfessionalFieldRepository,
+        private readonly DeviceRepository $deviceRepository
     ) {
     }
 
@@ -83,7 +84,17 @@ class AuthService
             throw new EmailNotVerifiedException;
         }
 
-        return $this->createAuthPayload($this->authRepository->loadPublicProfile($user));
+        return DB::transaction(function () use ($user, $credentials): array {
+            $device = $this->deviceRepository->registerForLogin($user, $credentials);
+            $auth = $this->createAuthPayload(
+                $this->authRepository->loadPublicProfile($user),
+                $device->name
+            );
+            $this->deviceRepository->attachToken($device, $auth['access_token']);
+            unset($auth['access_token']);
+
+            return $auth;
+        });
     }
 
     public function logout(User $user): void
@@ -131,7 +142,6 @@ class AuthService
         );
 
         $user->markEmailAsVerified();
-        UserEmailVerified::dispatch($user->id);
     }
 
     public function sendPasswordResetOtp(string $email): void
@@ -166,11 +176,14 @@ class AuthService
         });
     }
 
-    private function createAuthPayload(User $user): array
+    private function createAuthPayload(User $user, string $tokenName): array
     {
+        $newToken = $user->createToken($tokenName);
+
         return [
             'user' => $user,
-            'token' => $user->createToken('auth_token')->plainTextToken,
+            'token' => $newToken->plainTextToken,
+            'access_token' => $newToken->accessToken,
         ];
     }
 }

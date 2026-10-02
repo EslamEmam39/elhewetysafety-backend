@@ -19,6 +19,13 @@ class CourseRepository
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now())
             ->with(['category', 'instructor'])
+            ->withCount([
+                'lessons',
+                'enrollments as students_count' => fn ($query) => $query->where('status', 'active'),
+                'visibleReviews as reviews_count',
+            ])
+            ->withSum('lessons', 'duration_seconds')
+            ->withAvg('visibleReviews as average_rating', 'rating')
             ->orderByDesc('published_at')
             ->get();
     }
@@ -30,7 +37,14 @@ class CourseRepository
             ->where('status', 'published')
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now())
-            ->with(['category', 'instructor', 'chapters.lessons'])
+            ->with(['category', 'instructor'])
+            ->withCount([
+                'lessons',
+                'enrollments as students_count' => fn ($query) => $query->where('status', 'active'),
+                'visibleReviews as reviews_count',
+            ])
+            ->withSum('lessons', 'duration_seconds')
+            ->withAvg('visibleReviews as average_rating', 'rating')
             ->first();
     }
 }

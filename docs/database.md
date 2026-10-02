@@ -45,6 +45,7 @@ users.uuid UNIQUE
 users.username UNIQUE
 users.phone UNIQUE
 users.email UNIQUE
+devices.uuid UNIQUE
 targeted_professional_fields.code UNIQUE
 courses.slug UNIQUE
 chapters.code UNIQUE
@@ -53,15 +54,26 @@ countries.code UNIQUE
 cities.code UNIQUE
 students.user_id UNIQUE
 course_categories.slug UNIQUE
+payment_gateways.code UNIQUE
+orders.code UNIQUE
+payments.code UNIQUE
+payments.idempotency_key UNIQUE
+payments(payment_gateway_id, provider_reference) UNIQUE
+enrollments.code UNIQUE
 enrollments(user_id, course_id) UNIQUE
+enrollments.payment_id UNIQUE where payment_id is not null
 lesson_progress(user_id, lesson_id) UNIQUE
+course_reviews.code UNIQUE
+course_reviews(user_id, course_id) UNIQUE
+course_reviews.rating CHECK 1..5
 ```
 
 ## User Identity
 
 `users.id` remains the internal numeric primary key used by foreign keys.
-`users.uuid` is the stable public identifier and must be unique. Within domain
-tables, UUID columns are reserved for Users; other entities expose stable codes
+`users.uuid` is the stable public identifier and must be unique. UUID columns
+are reserved for Users and Devices: a Device UUID identifies the client
+installation supplied during login. Other Domain entities expose stable codes
 or slugs. Framework infrastructure tables may keep identifiers required by
 Laravel itself.
 Existing rows are backfilled by migration. New Users, and existing Users saved
@@ -98,6 +110,13 @@ selected or migrated.
 Referenced Countries and Cities are deactivated instead of deleted. Deactivating
 a Country also deactivates its Cities while preserving Student relationships.
 
+## Payment Gateways
+
+`payment_gateways` is normalized reference data. Each row has a stable unique
+`code`, localized `name_en` and `name_ar`, `is_active`, and `sort_order`. Provider
+credentials and secrets are not database columns. Gateways are deactivated
+instead of deleted so later Payment records can preserve their relationship.
+
 ## Foreign Keys and Deletion
 
 Choose delete behavior intentionally. Do not cascade every relationship by
@@ -114,6 +133,51 @@ unique public codes while retaining numeric foreign keys internally.
 
 Use decimal values, never float or double. Orders store purchase price and
 currency snapshots. Payments store the amount and currency for that attempt.
+`orders.amount` and `orders.currency` are copied from the Course by the backend
+at creation time and are never accepted from client input. Orders use restricted
+foreign keys to Users and Courses so purchase history cannot be cascaded away.
+Payment attempts similarly snapshot amount and currency from their Order and use
+restricted foreign keys to Orders and PaymentGateways. Provider references are
+unique within their gateway, while server-generated idempotency keys are globally
+unique.
+
+## Enrollments
+
+`enrollments` is the normalized User-to-Course access relation. It stores only
+atomic source and lifecycle state, with a unique User/Course pair. Its optional,
+unique `payment_id` is null for free access and preserves the exact paid attempt
+that granted access. User, Course, and Payment foreign keys restrict deletion so
+historical access cannot disappear through a cascade.
+
+## Devices and Access Tokens
+
+`devices` is normalized per User and has a globally unique UUID. Name,
+platform, User-Agent, IP address, activity time, and revocation time depend only
+on that Device row. The User foreign key cascades because Devices are
+authentication artifacts, not financial or learning history.
+
+The existing `personal_access_tokens` table gains a nullable `device_id`
+foreign key in a separate migration. Null preserves tokens issued before this
+feature. Deleting a Device nulls that reference, although normal Device removal
+uses revocation and token deletion rather than physical deletion.
+
+## Lesson Progress
+
+`lesson_progress` is the normalized User-to-Lesson learning-state relation.
+The unique `(user_id, lesson_id)` constraint is the final duplicate boundary;
+position, watch time, and completion time depend on that whole relationship.
+Both foreign keys cascade because progress is derived state whose owning User
+or Lesson no longer exists. Numeric IDs remain internal and no extra UUID or
+public code is introduced for a progress row.
+
+## Course Reviews
+
+`course_reviews` is the normalized User-to-Course rating relation. Rating,
+optional text, and moderation time depend on the complete User/Course pair.
+The database enforces one row per pair and ratings from 1 through 5. Reviews
+use stable public codes while numeric IDs remain internal. Course aggregate
+values are queried from Lessons, Enrollments, and visible Reviews and are not
+stored as duplicated columns on Courses.
 
 ## Transactions
 

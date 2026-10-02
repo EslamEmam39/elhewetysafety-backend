@@ -4,7 +4,7 @@
 
 - Laravel 12.
 - PostgreSQL.
-- JSON REST API consumed by a Next.js frontend.
+- JSON REST API consumed by a Nuxt frontend.
 - Authentication: Laravel Sanctum using Bearer Tokens.
 - Authorization: `spatie/laravel-permission`.
 - Public and authentication API routes belong in `routes/api.php`.
@@ -70,8 +70,9 @@ Before implementing a feature, read:
 - Reusable reference data such as countries, cities, categories, professional
   fields, and payment gateways belongs in normalized tables rather than repeated
   free-text columns.
-- In project domain tables, UUID is reserved for `users`; expose stable `code`
-  or `slug` values for other entities and keep numeric IDs internal.
+- In project domain tables, UUID is reserved for `users` and `devices`;
+  Device UUID identifies the client installation. Expose stable `code` or
+  `slug` values for other entities and keep numeric IDs internal.
 - Preserve intentional historical snapshots for financial, order, invoice, and
   certificate data when later reference-data changes must not rewrite history.
 
@@ -86,6 +87,9 @@ Before implementing a feature, read:
   documentation synchronization as a follow-up job.
 - If no Required Reading file needs a change, state the reason in the final
   response.
+- When a roadmap slice is started or finished, update its status in
+  `docs/phases.md` in the same turn. Do not leave a finished and verified
+  slice marked `In Progress`; if work remains, list the exact remaining item.
 
 ## Docker
 

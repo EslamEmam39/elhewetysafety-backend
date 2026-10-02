@@ -16,6 +16,11 @@ Do not begin a later phase when its required foundation is missing. Complete
 work vertically and in dependency order. Update this file when a slice starts,
 finishes, or changes scope.
 
+A Slice moves to `Completed` in the same turn after its implementation,
+PostgreSQL migration where applicable, route registration, Postman
+synchronization, and required documentation have been verified. Keep
+`In Progress` only when an explicit item in that Slice remains unfinished.
+
 ## Phase 0 — Project Foundation
 
 Status: **Completed**
@@ -24,7 +29,7 @@ Scope:
 
 - Laravel 12 API project running through Docker.
 - PostgreSQL development database.
-- Next.js frontend integration.
+- Nuxt frontend integration.
 - Laravel Sanctum Bearer Token authentication.
 - Spatie roles and permissions package installation.
 - Layered request architecture:
@@ -47,7 +52,7 @@ Route
 
 ## Phase 1 — Core System
 
-Status: **In Progress**
+Status: **Completed**
 
 Goal: establish the minimum domain required to sell one-time lifetime Course
 access and track learning progress without real payment-provider or AWS video
@@ -67,7 +72,7 @@ Status: **Completed**
 
 ### Slice 1.1a — Targeted Professional Fields
 
-Status: **In Progress**
+Status: **Completed**
 
 - Localized professional-field reference data.
 - Public list of active fields for registration.
@@ -103,7 +108,7 @@ Status: **Completed**
 
 ### Slice 1.3a — User Moderation
 
-Status: **In Progress**
+Status: **Completed**
 
 - Admin-only ban and unban operations by User UUID.
 - Required ban reason.
@@ -112,7 +117,7 @@ Status: **In Progress**
 
 ### Slice 1.3b — Student Profile and Location Reference Data
 
-Status: **In Progress**
+Status: **Completed**
 
 - Normalized Countries and Cities reference data.
 - A City belongs to one Country; a Student references one optional City.
@@ -123,7 +128,7 @@ Status: **In Progress**
 
 ### Slice 1.4 — Course Catalog
 
-Status: **In Progress**
+Status: **Completed**
 
 - Normalized Course categories.
 - Courses linked to one category.
@@ -141,56 +146,88 @@ Status: **In Progress**
 
 ### Slice 1.5 — Payment Gateway Foundation
 
-Status: **Planned**
+Status: **Completed**
 
-- Safe gateway metadata: code, display name, and active state.
+- Normalized gateway metadata: stable code, localized names, active state, and sort order.
+- Public active gateway lookup API.
+- Admin CRUD with deactivation instead of deletion.
+- Spatie-backed Policy authorization and seeded permissions.
 - No provider secrets stored in the database.
 - No real Paymob or Fawry communication yet.
 
 ### Slice 1.6 — Orders
 
-Status: **Planned**
+Status: **Completed**
 
 - An Order represents a purchase by one User for one Course.
 - Snapshot amount and currency at purchase time.
 - Order lifecycle: pending, paid, cancelled, and refunded.
+- Students can create, list, view, and cancel their own pending Orders.
+- Reuse an existing pending Order for the same User and Course.
+- Admins can filter and inspect Orders without manually forcing financial states.
 
 ### Slice 1.7 — Payment Attempts
 
-Status: **Planned**
+Status: **Completed**
 
 - Multiple Payment attempts may belong to one Order.
 - Payment belongs to one PaymentGateway.
 - Payment lifecycle: pending, paid, failed, and refunded.
 - Prepare identifiers required for future webhook idempotency.
 - Never accept payment success from the frontend.
+- Core APIs create and inspect attempts without contacting providers.
+- Gateway selection is resolved through the approved Interface and Factory.
 
 ### Slice 1.8 — Enrollment and Course Access
 
-Status: **Planned**
+Status: **Completed**
 
 - Enrollment represents lifetime Course access.
 - `UNIQUE(user_id, course_id)` prevents duplicate access records.
-- Verified payment success atomically marks Payment paid, marks Order paid,
-  and creates Enrollment.
+- Paid-Course Enrollment can be created only by the verified payment
+  completion workflow implemented in Phase 2; no client endpoint can forge it.
 - Published free Courses create Enrollment directly without an Order or Payment.
 - Backend authorization verifies Course ownership.
+- Student APIs list and inspect owned Enrollments and expose Course content only
+  while the Enrollment is active.
+- Admin APIs inspect, revoke, and reactivate access through Policy permissions.
+- The Core access foundation is complete; the atomic paid transition remains
+  explicitly scoped to Phase 2 provider integration.
 
 ### Slice 1.9 — Devices
 
-Status: **Planned**
+Status: **Completed**
 
 - Register and identify user devices.
 - Track last activity and revocation.
 - Prepare Service-owned device-limit rules.
+- Require device UUID, name, and optional platform during User and Admin login.
+- Bind each newly issued Sanctum token to its Device.
+- Allow authenticated Users to list and revoke their own Devices.
+- Allow authorized Admins to inspect User Devices and revoke their tokens.
+- A numeric device limit is intentionally not enforced until its product rule is approved.
 
 ### Slice 1.10 — Lesson Progress
 
-Status: **Planned**
+Status: **Completed**
 
 - Track last position, last watched time, and completion.
 - `UNIQUE(user_id, lesson_id)` prevents duplicate progress records.
 - Course access is required before protected progress operations.
+- Students can list their saved progress for one enrolled Course.
+- Progress updates reject playback positions beyond a known Lesson duration.
+- Completion is monotonic: once completed, a later update does not clear it.
+
+### Slice 1.11 — Course Reviews
+
+Status: **Completed**
+
+- Active enrolled Students can create one rating per Course.
+- Students can read, update, and delete their own review.
+- Public APIs expose only visible reviews.
+- Admins can inspect, hide, and republish reviews through Policy permissions.
+- Course duration, Lesson count, active Student count, average rating, and
+  review count are computed from their normalized source tables.
 
 ### Phase 1 Completion Criteria
 
@@ -200,11 +237,13 @@ Status: **Planned**
 - Admins can manage and assign Roles and Permissions.
 - Published Course structure can be read.
 - An Order can have multiple Payment attempts.
-- Only verified successful payment processing can create paid-Course Enrollment.
+- No frontend or public client endpoint can create paid-Course Enrollment;
+  verified payment completion is the Phase 2 integration boundary.
 - A published free Course can create Enrollment without an Order or Payment.
 - A User cannot receive duplicate Enrollment for one Course.
 - Enrolled users can access Course content and update Lesson progress.
 - Device records can be created, updated, and revoked.
+- Enrolled Students can rate Courses and public Course summaries expose review aggregates.
 
 ## Phase 2 — Real Payment Integrations
 
@@ -221,6 +260,8 @@ Scope:
 - Provider transaction reconciliation.
 - Retry-safe payment processing.
 - Refund state synchronization where supported.
+- Provider selection through `PaymentGatewayInterface`, concrete provider
+  services, `PaymentGatewayFactory`, and the orchestrating `PaymentService`.
 
 Implement one provider vertically before adding another provider.
 
@@ -264,7 +305,6 @@ Potential scope, implemented as separately approved slices:
 
 - Admin management APIs.
 - Operational dashboards and analytics.
-- Reviews.
 - Coupons and promotions.
 - Notifications.
 - Advanced account-sharing controls.

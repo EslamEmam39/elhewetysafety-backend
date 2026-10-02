@@ -9,6 +9,12 @@ use App\Http\Controllers\Api\Admin\Course\CourseController;
 use App\Http\Controllers\Api\Admin\Course\LessonController;
 use App\Http\Controllers\Api\Admin\Location\CityController;
 use App\Http\Controllers\Api\Admin\Location\CountryController;
+use App\Http\Controllers\Api\Admin\PaymentGateway\PaymentGatewayController;
+use App\Http\Controllers\Api\Admin\Order\OrderController;
+use App\Http\Controllers\Api\Admin\Payment\PaymentController;
+use App\Http\Controllers\Api\Admin\Enrollment\EnrollmentController;
+use App\Http\Controllers\Api\Admin\Device\DeviceController;
+use App\Http\Controllers\Api\Admin\CourseReview\CourseReviewController;
 use App\Http\Controllers\Api\Admin\Student\StudentController;
 use App\Http\Controllers\Api\Admin\User\UserController;
 use App\Http\Controllers\Api\Admin\User\UserModerationController;
@@ -31,6 +37,40 @@ Route::prefix('admin')->group(function () {
         // Location reference management.
         Route::apiResource('countries', CountryController::class);
         Route::apiResource('cities', CityController::class);
+
+        // Payment gateway reference management.
+        Route::apiResource('payment-gateways', PaymentGatewayController::class);
+
+        // Order monitoring routes.
+        Route::prefix('orders')->group(function () {
+            Route::get('/', [OrderController::class, 'index']);
+            Route::get('{order:code}', [OrderController::class, 'show']);
+        });
+        // Payment attempt monitoring routes.
+        Route::prefix('payments')->group(function () {
+            Route::get('/', [PaymentController::class, 'index']);
+            Route::get('{payment:code}', [PaymentController::class, 'show']);
+        });
+
+        // Enrollment monitoring and access management routes.
+        Route::prefix('enrollments')->group(function () {
+            Route::get('/', [EnrollmentController::class, 'index']);
+            Route::get('{enrollment:code}', [EnrollmentController::class, 'show']);
+            Route::put('{enrollment:code}/revoke', [EnrollmentController::class, 'revoke']);
+            Route::put('{enrollment:code}/activate', [EnrollmentController::class, 'activate']);
+        });
+
+        // Device monitoring and revocation routes.
+        Route::get('users/{user:uuid}/devices', [DeviceController::class, 'index']);
+        Route::put('devices/{device:uuid}/revoke', [DeviceController::class, 'revoke']);
+
+        // Course review monitoring and moderation routes.
+        Route::prefix('course-reviews')->group(function () {
+            Route::get('/', [CourseReviewController::class, 'index']);
+            Route::get('{courseReview:code}', [CourseReviewController::class, 'show']);
+            Route::put('{courseReview:code}/hide', [CourseReviewController::class, 'hide']);
+            Route::put('{courseReview:code}/publish', [CourseReviewController::class, 'publish']);
+        });
 
         // Course catalog management.
         Route::apiResource('course-categories', CourseCategoryController::class);

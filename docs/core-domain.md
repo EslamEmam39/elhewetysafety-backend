@@ -105,15 +105,30 @@ An Order represents a purchase and belongs to one User and Course. It snapshots
 the purchase `amount` and `currency`; historical values do not change when the
 Course price changes.
 
+Orders expose a stable unique `code`; their numeric IDs remain internal. Order
+creation accepts only a Course slug, and the backend snapshots price and currency
+from a currently published paid Course. Repeated creation for the same User and
+Course returns the existing pending Order. Free Courses bypass Orders and are
+handled by the Enrollment flow. Students may cancel only their own pending
+Orders. Administrators can inspect Orders but cannot manually force paid or
+refunded states.
+
 Possible statuses are `pending`, `paid`, `cancelled`, and `refunded`.
 
 ## Payment Gateways and Payments
 
-PaymentGateway stores safe metadata such as code, display name, and active
-state. Provider secrets belong in environment or secret configuration.
+PaymentGateway stores a stable unique code, localized English and Arabic names,
+active state, and deterministic sort order. Only active gateways are exposed by
+the public lookup API. Admin deletion deactivates a gateway so future Payment
+history can continue referencing it. Provider secrets belong in environment or
+secret configuration and must never be stored in this table.
 
 A Payment is one payment attempt, not the purchase itself. An Order may have
 multiple Payments, and each Payment belongs to a PaymentGateway.
+Each attempt exposes a stable code and snapshots amount and currency from its
+Order. Server-generated idempotency keys and gateway-scoped provider references
+prepare for retry-safe webhook processing. Core creation records a pending
+attempt only; provider initiation remains unavailable until Phase 2.
 
 Never trust payment success sent by the frontend. Only verified backend or
 provider communication may mark it paid. The design must support webhook
@@ -133,7 +148,14 @@ UNIQUE(user_id, course_id)
 A student enrolls in a Course once. Access is lifetime without subscriptions or
 expiration. A paid Course creates Enrollment only after verified successful
 payment. A free Course may create Enrollment directly without an Order or
-Payment. Possible states are `active` and `revoked`.
+Payment. Possible states are `active` and `revoked`; source is `free` or
+`payment`. Each Enrollment exposes a stable code while its numeric key remains
+internal. A payment-backed Enrollment references exactly one successful Payment.
+
+The public Course catalog does not expose Chapters or Lessons. Protected Course
+content is returned only to the owning User while their Enrollment is active.
+Revocation removes content access without deleting access history. Re-enrolling
+in a free Course is idempotent and does not bypass an administrative revocation.
 
 ## Purchase Flow
 
@@ -167,10 +189,18 @@ Student
 
 ## Devices
 
-Devices support future account-sharing protection. Useful fields include User,
-device UUID and name, user agent, IP address, last activity, and revocation.
-Device limits belong in Services. Browser fingerprinting is not absolute
-security.
+A Device represents one client installation used to authenticate a User. It
+belongs to one User and exposes its UUID as the stable public identity. Device
+name and optional platform come from the client; IP address and User-Agent are
+captured by the backend. Last activity and revocation are tracked without using
+browser fingerprinting as proof of identity.
+
+Each Sanctum access token may reference one Device. Login registers or refreshes
+the Device and binds the newly issued token to it. Revoking a Device sets
+`revoked_at` and deletes every token currently bound to that Device. A later
+successful credential login may trust and reactivate that same Device UUID.
+Device-count limits belong in `DeviceService` but are not enforced until the
+product selects a concrete limit.
 
 ## Lesson Progress
 
@@ -181,6 +211,27 @@ UNIQUE(user_id, lesson_id)
 ```
 
 Use `last_position_seconds`, `completed_at`, and `last_watched_at`.
+
+Progress can be read or updated only while the User has an active Enrollment
+for the Lesson's Course. One row represents one User/Lesson pair. Playback
+position may move forward or backward for resume behavior but cannot exceed a
+known Lesson duration. Completion is monotonic: setting `is_completed` records
+`completed_at` once, and ordinary progress updates cannot undo completion.
+
+## Course Reviews and Course Aggregates
+
+A CourseReview belongs to one User and one Course. Only a User with an active
+Enrollment may create or update a review, and `UNIQUE(user_id, course_id)`
+limits that User to one rating per Course. Rating is an integer from 1 through
+5; written review text is optional.
+
+Students may delete their own review. Administration hides inappropriate
+reviews using `hidden_at` instead of deleting them. Public lists, averages,
+and counts include visible reviews only.
+
+Course summary values are derived rather than duplicated: duration is the sum
+of Lesson durations, Lesson count comes from Lessons, active Student count from
+active Enrollments, and rating aggregates from visible CourseReviews.
 
 ## Outside the Current Core Phase
 

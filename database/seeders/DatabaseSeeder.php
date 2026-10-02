@@ -21,6 +21,13 @@ class DatabaseSeeder extends Seeder
             DemoUserSeeder::class,
             CourseCategorySeeder::class,
             CourseSeeder::class,
+            PaymentGatewaySeeder::class,
+            OrderSeeder::class,
+            PaymentSeeder::class,
+            EnrollmentSeeder::class,
+            DeviceSeeder::class,
+            LessonProgressSeeder::class,
+            CourseReviewSeeder::class,
         ]);
     }
 }

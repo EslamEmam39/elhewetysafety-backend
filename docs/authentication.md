@@ -2,7 +2,7 @@
 
 ## Authentication
 
-Use Laravel Sanctum Bearer Tokens. The Next.js frontend authenticates against
+Use Laravel Sanctum Bearer Tokens. The Nuxt frontend authenticates against
 the Laravel JSON API.
 
 ```text
@@ -70,9 +70,10 @@ The resend and verification endpoints accept the user's email address and are
 public so a user without a token can finish verification. Login rejects an
 unverified user with a `403` response.
 
-After successful email verification, a `UserEmailVerified` event queues a
-password-reset OTP. The client takes the user to the password-reset screen to
-complete this required step before their first login.
+After successful email verification, the client takes the user to the login
+screen. Registration has already collected and stored the confirmed password,
+so verification must not issue a password-reset OTP. Password-reset OTPs are
+reserved for the explicit forgotten-password flow.
 
 - Verification and resend endpoints must be rate limited.
 - A successful verification sets `email_verified_at` once.
@@ -107,6 +108,19 @@ cannot ban their own account. All administration endpoints use the
 Normal logout deletes only the current access token. Do not revoke every token
 unless the requested feature explicitly logs out all devices.
 
+## Device-Aware Login
+
+User and Admin login require `device_uuid` and `device_name`; the optional
+`device_platform` is descriptive only. The backend captures IP address and
+User-Agent itself. A successful login registers or refreshes the Device before
+issuing a Sanctum token and stores that Device relation on the token.
+
+Authenticated Users can list and revoke their own Devices. Revocation removes
+all Sanctum tokens belonging to the selected Device, including the current token
+when that Device revokes itself. Admin operations use `devices.view` and
+`devices.manage` through `DevicePolicy`. A Device UUID is an identifier, not
+an authentication secret.
+
 ## Authorization
 
 Use `spatie/laravel-permission` with initial roles `admin` and `student`.
@@ -134,6 +148,25 @@ Role only; it does not delete the owning User account.
 Course administration uses `course-categories.view`,
 `course-categories.manage`, `courses.view`, `courses.manage`,
 `chapters.manage`, and `lessons.manage` permissions through Policies.
+Payment gateway administration uses `payment-gateways.view` and
+`payment-gateways.manage` through `PaymentGatewayPolicy`.
+Order administration uses `orders.view` through `OrderPolicy`. Student Order
+routes require Sanctum authentication, ban enforcement, and the `student` role;
+ownership is enforced in `OrderService` and Repository queries.
+Payment administration uses `payments.view` through `PaymentPolicy`. Student
+Payment routes enforce ownership through the owning Order and never accept a
+paid, failed, or refunded status from client input.
+Enrollment administration uses `enrollments.view` and `enrollments.manage`
+through `EnrollmentPolicy`. Student Enrollment queries are scoped to the
+authenticated User, and protected Course content requires an active owned
+Enrollment. Enrollment status is never accepted from student input.
+Lesson Progress routes require Sanctum authentication, ban enforcement, the
+Student role, and an active Enrollment for the Course. User IDs and completion
+timestamps are never accepted from client input.
+Course Review creation and update require the same authenticated active
+Enrollment. Ownership scopes each Student's read, update, and delete operations.
+Admin moderation uses `course-reviews.view` and `course-reviews.manage`
+through `CourseReviewPolicy`; public requests receive visible reviews only.
 
 ## Local Seed Accounts
 

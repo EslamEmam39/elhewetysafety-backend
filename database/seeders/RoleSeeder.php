@@ -34,6 +34,16 @@ class RoleSeeder extends Seeder
             'courses.manage',
             'chapters.manage',
             'lessons.manage',
+            'payment-gateways.view',
+            'payment-gateways.manage',
+            'orders.view',
+            'payments.view',
+            'enrollments.view',
+            'enrollments.manage',
+            'devices.view',
+            'devices.manage',
+            'course-reviews.view',
+            'course-reviews.manage',
         ];
 
         $permissions = collect($permissionNames)

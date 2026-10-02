@@ -14,9 +14,10 @@ class SendPasswordResetOtp implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public bool $afterCommit = true;
-
-    public function __construct(public readonly int $userId) {}
+    public function __construct(public readonly int $userId)
+    {
+        $this->afterCommit();
+    }
 
     public function handle(OtpService $otpService): void
     {

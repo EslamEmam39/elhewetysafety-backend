@@ -29,7 +29,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\"email\":\"admin@elhewety.test\",\"password\":\"password\"}",
+                  "raw": "{\"email\":\"admin@elhewety.test\",\"password\":\"password\",\"device_uuid\":\"10000000-0000-4000-8000-000000000001\",\"device_name\":\"Admin Postman\",\"device_platform\":\"postman\"}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1663,6 +1663,513 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Payment Gateways",
+          "item": [
+            {
+              "name": "All",
+              "request": {
+                "method": "GET",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/payment-gateways",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "payment-gateways"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"code\":\"paymob\",\"name_en\":\"Paymob\",\"name_ar\":\"باي موب\",\"is_active\":true,\"sort_order\":1}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/admin/payment-gateways",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "payment-gateways"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get",
+              "request": {
+                "method": "GET",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/payment-gateways/:code",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "payment-gateways",
+                    ":code"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"name_en\":\"Paymob Egypt\",\"sort_order\":1}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{local}}/admin/payment-gateways/:code",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "payment-gateways",
+                    ":code"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Deactivate",
+              "request": {
+                "method": "DELETE",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/payment-gateways/:code",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "payment-gateways",
+                    ":code"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Orders",
+          "item": [
+            {
+              "name": "All",
+              "request": {
+                "method": "GET",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/orders",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get",
+              "request": {
+                "method": "GET",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/orders/:code",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "orders",
+                    ":code"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Payments",
+          "item": [
+            {
+              "name": "All",
+              "request": {
+                "method": "GET",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/payments",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "payments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get",
+              "request": {
+                "method": "GET",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/payments/:code",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "payments",
+                    ":code"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Enrollments",
+          "item": [
+            {
+              "name": "All",
+              "request": {
+                "method": "GET",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/enrollments",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "enrollments"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get",
+              "request": {
+                "method": "GET",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/enrollments/:code",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "enrollments",
+                    ":code"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Revoke",
+              "request": {
+                "method": "PUT",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/enrollments/:code/revoke",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "enrollments",
+                    ":code",
+                    "revoke"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Activate",
+              "request": {
+                "method": "PUT",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/enrollments/:code/activate",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "enrollments",
+                    ":code",
+                    "activate"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Devices",
+          "item": [
+            {
+              "name": "User Devices",
+              "request": {
+                "method": "GET",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/users/:user_uuid/devices",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users",
+                    ":user_uuid",
+                    "devices"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Revoke",
+              "request": {
+                "method": "PUT",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/devices/:device_uuid/revoke",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "devices",
+                    ":device_uuid",
+                    "revoke"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Course Reviews",
+          "item": [
+            {
+              "name": "All",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local}}/admin/course-reviews",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "course-reviews"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local}}/admin/course-reviews/:code",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "course-reviews",
+                    ":code"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Hide",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local}}/admin/course-reviews/:code/hide",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "course-reviews",
+                    ":code",
+                    "hide"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Publish",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local}}/admin/course-reviews/:code/publish",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "course-reviews",
+                    ":code",
+                    "publish"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -1891,7 +2398,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"email\":\"student@elhewety.test\",\"password\":\"password\"}",
+              "raw": "{\"email\":\"student@elhewety.test\",\"password\":\"password\",\"device_uuid\":\"20000000-0000-4000-8000-000000000001\",\"device_name\":\"Student Postman\",\"device_platform\":\"postman\"}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2096,6 +2603,27 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Payment Gateways",
+          "request": {
+            "method": "GET",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/payment-gateways",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "payment-gateways"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -2144,6 +2672,574 @@
               "path": [
                 "courses",
                 ":slug"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "All",
+          "request": {
+            "method": "GET",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/orders",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"course_slug\":\"occupational-safety-fundamentals\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{local}}/orders",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get",
+          "request": {
+            "method": "GET",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/orders/:code",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "orders",
+                ":code"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel",
+          "request": {
+            "method": "DELETE",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/orders/:code",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "orders",
+                ":code"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "All By Order",
+          "request": {
+            "method": "GET",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/orders/:order_code/payments",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "orders",
+                ":order_code",
+                "payments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Attempt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"gateway_code\":\"paymob\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{local}}/orders/:order_code/payments",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "orders",
+                ":order_code",
+                "payments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get",
+          "request": {
+            "method": "GET",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/payments/:code",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "payments",
+                ":code"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Enrollments",
+      "item": [
+        {
+          "name": "All",
+          "request": {
+            "method": "GET",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/enrollments",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "enrollments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Enroll in Free Course",
+          "request": {
+            "method": "POST",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/courses/:course_slug/enroll",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "courses",
+                ":course_slug",
+                "enroll"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get",
+          "request": {
+            "method": "GET",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/enrollments/:code",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "enrollments",
+                ":code"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Course Content",
+          "request": {
+            "method": "GET",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/courses/:course_slug/content",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "courses",
+                ":course_slug",
+                "content"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Devices",
+      "item": [
+        {
+          "name": "All",
+          "request": {
+            "method": "GET",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/devices",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "devices"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke",
+          "request": {
+            "method": "DELETE",
+            "header": {
+              "key": "Accept",
+              "value": "application/json",
+              "type": "text"
+            },
+            "url": {
+              "raw": "{{local}}/devices/:device_uuid",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "devices",
+                ":device_uuid"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Lesson Progress",
+      "item": [
+        {
+          "name": "Course Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{local}}/courses/:course_slug/progress",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "courses",
+                ":course_slug",
+                "progress"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Lesson Progress",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{local}}/lessons/:lesson_code/progress",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "lessons",
+                ":lesson_code",
+                "progress"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"last_position_seconds\":120,\"is_completed\":false}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Course Reviews",
+      "item": [
+        {
+          "name": "Course Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{local}}/courses/:course_slug/reviews",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "courses",
+                ":course_slug",
+                "reviews"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "My Review",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{local}}/courses/:course_slug/reviews/me",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "courses",
+                ":course_slug",
+                "reviews",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{local}}/courses/:course_slug/reviews",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "courses",
+                ":course_slug",
+                "reviews"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"rating\":5,\"review_text\":\"Clear and practical course.\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Mine",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{local}}/courses/:course_slug/reviews/me",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "courses",
+                ":course_slug",
+                "reviews",
+                "me"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"rating\":4,\"review_text\":\"Updated review.\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Mine",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{local}}/courses/:course_slug/reviews/me",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "courses",
+                ":course_slug",
+                "reviews",
+                "me"
               ]
             }
           },
