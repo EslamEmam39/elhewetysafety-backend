@@ -185,14 +185,14 @@ Status: **Completed**
 - Enrollment represents lifetime Course access.
 - `UNIQUE(user_id, course_id)` prevents duplicate access records.
 - Paid-Course Enrollment can be created only by the verified payment
-  completion workflow implemented in Phase 2; no client endpoint can forge it.
+  completion workflow implemented in Phase 3; no client endpoint can forge it.
 - Published free Courses create Enrollment directly without an Order or Payment.
 - Backend authorization verifies Course ownership.
 - Student APIs list and inspect owned Enrollments and expose Course content only
   while the Enrollment is active.
 - Admin APIs inspect, revoke, and reactivate access through Policy permissions.
 - The Core access foundation is complete; the atomic paid transition remains
-  explicitly scoped to Phase 2 provider integration.
+  explicitly scoped to Phase 3 provider integration.
 
 ### Slice 1.9 — Devices
 
@@ -238,14 +238,70 @@ Status: **Completed**
 - Published Course structure can be read.
 - An Order can have multiple Payment attempts.
 - No frontend or public client endpoint can create paid-Course Enrollment;
-  verified payment completion is the Phase 2 integration boundary.
+  verified payment completion is the Phase 3 integration boundary.
 - A published free Course can create Enrollment without an Order or Payment.
 - A User cannot receive duplicate Enrollment for one Course.
 - Enrolled users can access Course content and update Lesson progress.
 - Device records can be created, updated, and revoked.
 - Enrolled Students can rate Courses and public Course summaries expose review aggregates.
 
-## Phase 2 — Real Payment Integrations
+## Phase 2 — Video Infrastructure
+
+Status: **In Progress**
+
+Dependencies: Phase 1 Course access, Lessons, Enrollments, Devices, and Lesson
+Progress.
+
+Scope:
+
+- Storage abstraction that supports a local development disk and production
+  object storage without changing Lesson or playback business logic.
+- One free Lesson video as the first vertical playback slice.
+- Admin upload workflow with processing state and persisted storage keys only.
+- Private S3-compatible object storage for production Course videos.
+- CloudFront or equivalent CDN delivery.
+- Short-lived signed URLs or signed cookies for protected playback.
+- Access checks before issuing playback authorization.
+- HLS manifest storage and transcoding/processing state.
+- Free Course videos may use public CDN delivery only when intentionally public;
+  the preferred default is the same protected delivery pipeline used by paid
+  Courses.
+- Paid Course videos always require an active Enrollment and temporary signed
+  playback authorization.
+
+Permanent public URLs for paid Course videos are not allowed. Laravel must not
+stream production video bytes through the API process.
+
+### Slice 2.1 — First Free Video
+
+Status: **In Progress**
+
+- Configure the development storage disk.
+- Upload one video through an authorized Admin endpoint.
+- Attach its storage key, duration, and processing state to one Lesson.
+- Authorize an enrolled Student to request playback metadata.
+- Play the Lesson from Nuxt and persist Lesson Progress.
+- Keep storage-specific URLs out of the database and public Resources.
+
+Backend status: the local upload endpoint, provider-neutral Lesson metadata,
+active-Enrollment playback authorization, and temporary playback URL contract
+are implemented, the PostgreSQL migration has been applied, and deterministic
+Admin, Student, free Course, Lesson, and active Enrollment values are available
+in the canonical Postman collection. Re-seeding preserves uploaded video
+metadata. Remaining before this Slice is complete: upload the actual sample
+video and connect Nuxt playback and progress updates.
+
+### Slice 2.2 — Production Private Delivery
+
+Status: **Planned**
+
+- Configure S3-compatible private storage and CDN delivery.
+- Generate short-lived playback authorization.
+- Add HLS processing and callback/status handling.
+- Apply the same protected pipeline to free and paid content unless a free
+  Lesson is explicitly approved for public CDN access.
+
+## Phase 3 — Real Payment Integrations
 
 Status: **Planned**
 
@@ -264,23 +320,6 @@ Scope:
   services, `PaymentGatewayFactory`, and the orchestrating `PaymentService`.
 
 Implement one provider vertically before adding another provider.
-
-## Phase 3 — Private Video Infrastructure
-
-Status: **Planned**
-
-Dependencies: Phase 1 Course access and Lessons.
-
-Scope:
-
-- Private S3 object storage.
-- CloudFront private delivery.
-- Signed URLs or signed cookies.
-- Upload workflow.
-- HLS transcoding and processing state.
-- Access checks before issuing playback authorization.
-
-Permanent public video URLs are not allowed.
 
 ## Phase 4 — Learning Completion
 
@@ -317,5 +356,4 @@ Instructor marketplace
 Affiliate system
 Advanced analytics
 Multiple payment providers at the same time
-Production AWS/HLS work before Course access exists
 ```

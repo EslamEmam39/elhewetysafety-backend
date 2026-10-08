@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\LessonProgress\LessonProgressController;
 use App\Http\Controllers\Api\CourseReview\CourseReviewController;
 use App\Http\Controllers\Api\ProfessionalField\TargetedProfessionalFieldController;
 use App\Http\Controllers\Api\Student\StudentProfileController;
+use App\Http\Controllers\Api\Video\LessonPlaybackController;
 use Illuminate\Support\Facades\Route;
 
 // Authentication and account routes.
@@ -61,6 +62,7 @@ Route::middleware(['auth:sanctum', 'not_banned', 'role:student'])->group(functio
     Route::get('courses/{course:slug}/content', [EnrollmentController::class, 'content']);
     Route::get('courses/{course:slug}/progress', [LessonProgressController::class, 'index']);
     Route::put('lessons/{lesson:code}/progress', [LessonProgressController::class, 'update']);
+    Route::get('lessons/{lesson:code}/playback', [LessonPlaybackController::class, 'show']);
     Route::get('courses/{course:slug}/reviews/me', [CourseReviewController::class, 'mine']);
     Route::post('courses/{course:slug}/reviews', [CourseReviewController::class, 'store']);
     Route::patch('courses/{course:slug}/reviews/me', [CourseReviewController::class, 'update']);

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Admin\CourseReview\CourseReviewController;
 use App\Http\Controllers\Api\Admin\Student\StudentController;
 use App\Http\Controllers\Api\Admin\User\UserController;
 use App\Http\Controllers\Api\Admin\User\UserModerationController;
+use App\Http\Controllers\Api\Admin\Video\LessonVideoController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -93,6 +94,7 @@ Route::prefix('admin')->group(function () {
         Route::prefix('lessons')->group(function () {
             Route::get('{lesson:code}', [LessonController::class, 'show']);
             Route::patch('{lesson:code}', [LessonController::class, 'update']);
+            Route::post('{lesson:code}/video', [LessonVideoController::class, 'store']);
             Route::delete('{lesson:code}', [LessonController::class, 'destroy']);
         });
 

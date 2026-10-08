@@ -13,6 +13,21 @@
           "item": [
             {
               "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const response = pm.response.json();",
+                      "if (response.success && response.data?.token) {",
+                      "    pm.collectionVariables.set('admin_token', response.data.token);",
+                      "    pm.collectionVariables.set('token', response.data.token);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
               "request": {
                 "method": "POST",
                 "header": [
@@ -29,7 +44,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\"email\":\"admin@elhewety.test\",\"password\":\"password\",\"device_uuid\":\"10000000-0000-4000-8000-000000000001\",\"device_name\":\"Admin Postman\",\"device_platform\":\"postman\"}",
+                  "raw": "{\"email\":\"{{admin_email}}\",\"password\":\"{{password}}\",\"device_uuid\":\"{{admin_device_uuid}}\",\"device_name\":\"Admin Postman\",\"device_platform\":\"postman\"}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1551,7 +1566,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\"code\":\"first-aid-scene-safety\",\"title\":\"Scene Safety\",\"sort_order\":1,\"video_status\":\"pending\",\"duration_seconds\":600,\"is_free_preview\":true}",
+                  "raw": "{\"code\":\"first-aid-scene-safety\",\"title\":\"Scene Safety\",\"sort_order\":1,\"is_free_preview\":true}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1616,7 +1631,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\"video_status\":\"ready\",\"duration_seconds\":620}",
+                  "raw": "{\"title\":\"Updated Scene Safety\",\"is_free_preview\":true}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1632,6 +1647,47 @@
                     "admin",
                     "lessons",
                     ":code"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Upload Video",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "video",
+                      "type": "file",
+                      "src": []
+                    },
+                    {
+                      "key": "duration_seconds",
+                      "value": "{{video_duration_seconds}}",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{local}}/admin/lessons/:lesson_code/video",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "lessons",
+                    ":lesson_code",
+                    "video"
                   ]
                 }
               },
@@ -2382,6 +2438,21 @@
         },
         {
           "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.success && response.data?.token) {",
+                  "    pm.collectionVariables.set('student_token', response.data.token);",
+                  "    pm.collectionVariables.set('token', response.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -2398,7 +2469,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"email\":\"student@elhewety.test\",\"password\":\"password\",\"device_uuid\":\"20000000-0000-4000-8000-000000000001\",\"device_name\":\"Student Postman\",\"device_platform\":\"postman\"}",
+              "raw": "{\"email\":\"{{student_email}}\",\"password\":\"{{password}}\",\"device_uuid\":\"{{student_device_uuid}}\",\"device_name\":\"Student Postman\",\"device_platform\":\"postman\"}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3018,6 +3089,36 @@
       ]
     },
     {
+      "name": "Lesson Playback",
+      "item": [
+        {
+          "name": "Authorize Playback",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{local}}/lessons/:lesson_code/playback",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "lessons",
+                ":lesson_code",
+                "playback"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Lesson Progress",
       "item": [
         {
@@ -3267,6 +3368,66 @@
     {
       "key": "token",
       "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "student_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_email",
+      "value": "admin@elhewety.test",
+      "type": "string"
+    },
+    {
+      "key": "student_email",
+      "value": "student@elhewety.test",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "password",
+      "type": "string"
+    },
+    {
+      "key": "admin_device_uuid",
+      "value": "10000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "student_device_uuid",
+      "value": "20000000-0000-4000-8000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "course_slug",
+      "value": "fire-safety-and-evacuation",
+      "type": "string"
+    },
+    {
+      "key": "chapter_code",
+      "value": "fire-safety-essentials",
+      "type": "string"
+    },
+    {
+      "key": "lesson_code",
+      "value": "fire-triangle-and-prevention",
+      "type": "string"
+    },
+    {
+      "key": "enrollment_code",
+      "value": "ENR-DEMO-FREE",
+      "type": "string"
+    },
+    {
+      "key": "video_duration_seconds",
+      "value": "600",
       "type": "string"
     }
   ]

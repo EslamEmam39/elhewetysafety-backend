@@ -176,3 +176,9 @@ They use the password `password`: `admin@elhewety.test` for administration,
 `banned@elhewety.test` for ban enforcement, and
 `unverified@elhewety.test` for email-verification enforcement. OTP values and
 Sanctum tokens are never seeded; they must be issued through their API flows.
+
+The canonical Postman collection includes these credentials and saves a
+successful Admin or Student login token automatically into the collection
+`token` variable. The seeded Student has the active `ENR-DEMO-FREE` Enrollment
+for the free `fire-safety-and-evacuation` Course, including the
+`fire-triangle-and-prevention` Lesson used by the first video playback slice.

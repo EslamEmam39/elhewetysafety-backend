@@ -91,13 +91,21 @@ Chapters and Lessons use `sort_order`.
 Courses expose `slug`; Chapters and Lessons expose globally unique stable
 `code` values. Their numeric primary keys remain internal.
 
-Lessons store private storage keys rather than permanent public URLs:
-`video_s3_key`, `video_hls_manifest_key`, `video_status`, `duration_seconds`,
-and `is_free_preview`.
+Lessons store private storage metadata rather than permanent public URLs:
+`video_disk`, `video_storage_key`, `video_mime_type`, `video_size_bytes`,
+`video_hls_manifest_key`, `video_status`, `duration_seconds`, and
+`is_free_preview`.
 
 Possible video states are `pending`, `processing`, `ready`, and `failed`.
-Private S3, CloudFront, HLS processing, and full AWS integration are outside
-the current Core phase.
+Private storage, CDN delivery, signed playback authorization, and HLS processing
+are implemented in Phase 2 after the Core access boundary. Development may use
+a local storage disk for the first free-video slice, but production storage URLs
+remain derived from storage keys and are never persisted as permanent public
+Lesson URLs. Paid playback always requires an active Enrollment.
+The first local upload flow records an Admin-supplied duration after validation;
+the production processing workflow will replace that value with media-probed
+metadata. Playback authorization requires an active Enrollment even for a free
+Course; `is_free_preview` does not bypass the protected playback endpoint.
 
 ## Orders
 
@@ -128,7 +136,7 @@ multiple Payments, and each Payment belongs to a PaymentGateway.
 Each attempt exposes a stable code and snapshots amount and currency from its
 Order. Server-generated idempotency keys and gateway-scoped provider references
 prepare for retry-safe webhook processing. Core creation records a pending
-attempt only; provider initiation remains unavailable until Phase 2.
+attempt only; provider initiation remains unavailable until Phase 3.
 
 Never trust payment success sent by the frontend. Only verified backend or
 provider communication may mark it paid. The design must support webhook
@@ -235,7 +243,8 @@ active Enrollments, and rating aggregates from visible CourseReviews.
 
 ## Outside the Current Core Phase
 
-Do not automatically build real Paymob or Fawry integration, production
-webhooks, full AWS/HLS infrastructure, quizzes, certificates, reviews,
-coupons, subscriptions, instructor marketplace, advanced analytics, or an
-affiliate system.
+Private video infrastructure is now the approved Phase 2 scope. Real Paymob or
+Fawry integration and production webhooks remain Phase 3 work. Quizzes,
+certificates, coupons, subscriptions, instructor marketplace, advanced
+analytics, and an affiliate system still require their separately approved
+roadmap slices.

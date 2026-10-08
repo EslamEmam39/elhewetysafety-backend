@@ -170,6 +170,15 @@ Both foreign keys cascade because progress is derived state whose owning User
 or Lesson no longer exists. Numeric IDs remain internal and no extra UUID or
 public code is introduced for a progress row.
 
+## Lesson Video Metadata
+
+A Lesson owns at most one active source video. Its disk, storage key, MIME type,
+byte size, processing state, duration, and optional HLS manifest key are atomic
+attributes that depend only on the Lesson, so they remain on `lessons` rather
+than introducing a one-row video table. The storage key is provider-neutral;
+permanent public URLs are neither stored nor exposed. Replacing a source video
+updates this metadata and removes the superseded object after persistence.
+
 ## Course Reviews
 
 `course_reviews` is the normalized User-to-Course rating relation. Rating,

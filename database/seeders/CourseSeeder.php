@@ -102,14 +102,20 @@ class CourseSeeder extends Seeder
             );
 
             foreach ($chapterData['lessons'] as $lessonIndex => $lessonData) {
-                Lesson::query()->updateOrCreate(
+                $lesson = Lesson::query()->updateOrCreate(
                     ['chapter_id' => $chapter->id, 'sort_order' => $lessonIndex + 1],
-                    $lessonData + [
-                        'video_s3_key' => null,
-                        'video_hls_manifest_key' => null,
-                        'video_status' => 'ready',
-                    ]
+                    $lessonData
                 );
+
+                // Keep uploaded video metadata when the local demo data is re-seeded.
+                if ($lesson->video_storage_key === null && $lesson->video_hls_manifest_key === null) {
+                    $lesson->update([
+                        'video_disk' => null,
+                        'video_mime_type' => null,
+                        'video_size_bytes' => null,
+                        'video_status' => 'pending',
+                    ]);
+                }
             }
         }
     }

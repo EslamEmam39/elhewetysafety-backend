@@ -7,5 +7,18 @@ use Illuminate\Validation\Rule;
 
 class StoreLessonRequest extends ApiFormRequest
 {
-    public function rules(): array { return ['code' => ['required','string','max:255','alpha_dash',Rule::unique('lessons','code')], 'title' => ['required','string','max:255'], 'sort_order' => ['required','integer','min:1',Rule::unique('lessons','sort_order')->where('chapter_id', $this->route('chapter')->id)], 'video_s3_key' => ['nullable','string','max:2048'], 'video_hls_manifest_key' => ['nullable','string','max:2048'], 'video_status' => ['sometimes',Rule::in(['pending','processing','ready','failed'])], 'duration_seconds' => ['nullable','integer','min:0'], 'is_free_preview' => ['sometimes','boolean']]; }
+    public function rules(): array
+    {
+        return [
+            'code' => ['required', 'string', 'max:255', 'alpha_dash', Rule::unique('lessons', 'code')],
+            'title' => ['required', 'string', 'max:255'],
+            'sort_order' => [
+                'required',
+                'integer',
+                'min:1',
+                Rule::unique('lessons', 'sort_order')->where('chapter_id', $this->route('chapter')->id),
+            ],
+            'is_free_preview' => ['sometimes', 'boolean'],
+        ];
+    }
 }

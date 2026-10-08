@@ -99,7 +99,7 @@ PaymentService
 code, and `PaymentService` owns orchestration, persistence coordination, and
 transactions. Provider services do not create Orders, update Enrollments, or
 construct HTTP responses. Provider secrets remain in environment-backed config.
-The concrete provider integrations are implemented in Phase 2, after the Core
+The concrete provider integrations are implemented in Phase 3, after the Core
 Order, Payment, and Enrollment foundations exist.
 
 Enrollment access follows the standard feature pipeline. `EnrollmentService`
@@ -157,6 +157,13 @@ published Course state, active Enrollment, ownership, and one-review rules;
 Course catalog queries calculate duration, Lesson count, active Enrollment
 count, and visible-review aggregates in SQL without loading every related row
 or storing duplicate summary columns.
+
+Lesson video delivery follows the same layered flow. The Admin upload endpoint
+passes the validated file to `VideoService`; storage operations stay in the
+Service while `VideoRepository` owns Lesson metadata persistence and Enrollment
+access queries. Playback responses expose a short-lived URL derived from the
+stored disk and key. Controllers and Resources never expose a permanent storage
+URL, and Laravel does not stream production video bytes through the API process.
 
 ## Policies and Spatie Permissions
 
