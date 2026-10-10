@@ -83,6 +83,7 @@ Route::prefix('admin')->group(function () {
 
         // Chapter management.
         Route::prefix('chapters')->group(function () {
+            Route::get('/', [ChapterController::class, 'all']);
             Route::get('{chapter:code}', [ChapterController::class, 'show']);
             Route::patch('{chapter:code}', [ChapterController::class, 'update']);
             Route::delete('{chapter:code}', [ChapterController::class, 'destroy']);
@@ -92,9 +93,11 @@ Route::prefix('admin')->group(function () {
 
         // Lesson management.
         Route::prefix('lessons')->group(function () {
+            Route::get('/', [LessonController::class, 'all']);
             Route::get('{lesson:code}', [LessonController::class, 'show']);
             Route::patch('{lesson:code}', [LessonController::class, 'update']);
             Route::post('{lesson:code}/video', [LessonVideoController::class, 'store']);
+            Route::get('{lesson:code}/video/playback', [LessonVideoController::class, 'show']);
             Route::delete('{lesson:code}', [LessonController::class, 'destroy']);
         });
 

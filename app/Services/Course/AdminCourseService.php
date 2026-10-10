@@ -3,6 +3,7 @@
 namespace App\Services\Course;
 
 use App\Exceptions\Course\CourseReferenceUnavailableException;
+use App\Exceptions\Course\LessonPositionUnavailableException;
 use App\Models\Chapter;
 use App\Models\Course;
 use App\Models\CourseCategory;
@@ -58,6 +59,10 @@ class AdminCourseService
     {
         return $this->repository->chapters($course);
     }
+    public function allChapters(): Collection
+    {
+        return $this->repository->allChapters();
+    }
     public function createChapter(Course $course, array $data): Chapter
     {
         return $this->repository->createChapter($course, $data);
@@ -75,12 +80,29 @@ class AdminCourseService
     {
         return $this->repository->lessons($chapter);
     }
+    public function allLessons(): Collection
+    {
+        return $this->repository->allLessons();
+    }
     public function createLesson(Chapter $chapter, array $data): Lesson
     {
         return $this->repository->createLesson($chapter, $data);
     }
     public function updateLesson(Lesson $lesson, array $data): Lesson
     {
+        $chapterId = $lesson->chapter_id;
+        if (array_key_exists('chapter_code', $data)) {
+            $chapterId = $this->repository->findChapterByCode($data['chapter_code'])?->id
+                ?? throw new CourseReferenceUnavailableException('chapter_code');
+            $data['chapter_id'] = $chapterId;
+            unset($data['chapter_code']);
+        }
+
+        $sortOrder = $data['sort_order'] ?? $lesson->sort_order;
+        if ($this->repository->lessonPositionExists($chapterId, $sortOrder, $lesson->id)) {
+            throw new LessonPositionUnavailableException();
+        }
+
         return $this->repository->updateLesson($lesson, $data);
     }
     public function deleteLesson(Lesson $lesson): void

@@ -142,6 +142,10 @@ Status: **Completed**
 - Private video storage keys and processing status only.
 - Public read API for published Course content.
 - Admin CRUD for categories, Courses, Chapters, and Lessons.
+- Global administration lists for Chapters and Lessons include their normalized
+  parent references, while creation remains scoped to Course or Chapter.
+- Lesson administration can reassign an existing Lesson to another Chapter by
+  stable Chapter code while preserving the normalized foreign-key relationship.
 - Spatie-backed Policies protect every administration operation.
 
 ### Slice 1.5 — Payment Gateway Foundation
@@ -274,13 +278,15 @@ stream production video bytes through the API process.
 
 ### Slice 2.1 — First Free Video
 
-Status: **In Progress**
+Status: **Completed**
 
 - Configure the development storage disk.
 - Upload one video through an authorized Admin endpoint.
 - Attach its storage key, duration, and processing state to one Lesson.
 - Authorize an enrolled Student to request playback metadata.
 - Play the Lesson from Nuxt and persist Lesson Progress.
+- Allow authorized administrators to preview an uploaded Lesson video through a
+  temporary playback URL without exposing its storage key.
 - Keep storage-specific URLs out of the database and public Resources.
 
 Backend status: the local upload endpoint, provider-neutral Lesson metadata,
@@ -288,8 +294,12 @@ active-Enrollment playback authorization, and temporary playback URL contract
 are implemented, the PostgreSQL migration has been applied, and deterministic
 Admin, Student, free Course, Lesson, and active Enrollment values are available
 in the canonical Postman collection. Re-seeding preserves uploaded video
-metadata. Remaining before this Slice is complete: upload the actual sample
-video and connect Nuxt playback and progress updates.
+metadata. A sample video has been uploaded and verified through the protected
+playback endpoint. Local signed delivery supports HTTP byte ranges required for
+seeking and resume, while production delivery remains delegated to object
+storage/CDN temporary URLs. Nuxt requests the temporary playback URL, restores an
+incomplete saved position, and persists bounded progress during playback, on
+pause, before lesson changes, and on completion.
 
 ### Slice 2.2 — Production Private Delivery
 

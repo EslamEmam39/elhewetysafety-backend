@@ -64,14 +64,18 @@ class AdminCourseRepository
     {
         return $course->chapters()->with('lessons')->get();
     }
+    public function allChapters(): Collection
+    {
+        return Chapter::query()->with('course')->orderBy('course_id')->orderBy('sort_order')->orderBy('id')->get();
+    }
     public function createChapter(Course $course, array $data): Chapter
     {
-        return $course->chapters()->create($data);
+        return $course->chapters()->create($data)->load('course');
     }
     public function updateChapter(Chapter $chapter, array $data): Chapter
     {
         $chapter->update($data);
-        return $chapter->refresh()->load('lessons');
+        return $chapter->refresh()->load(['course', 'lessons']);
     }
     public function deleteChapter(Chapter $chapter): void
     {
@@ -82,14 +86,30 @@ class AdminCourseRepository
     {
         return $chapter->lessons()->get();
     }
+    public function findChapterByCode(string $code): ?Chapter
+    {
+        return Chapter::query()->where('code', $code)->first();
+    }
+    public function lessonPositionExists(int $chapterId, int $sortOrder, int $exceptLessonId): bool
+    {
+        return Lesson::query()
+            ->where('chapter_id', $chapterId)
+            ->where('sort_order', $sortOrder)
+            ->whereKeyNot($exceptLessonId)
+            ->exists();
+    }
+    public function allLessons(): Collection
+    {
+        return Lesson::query()->with('chapter.course')->orderBy('chapter_id')->orderBy('sort_order')->orderBy('id')->get();
+    }
     public function createLesson(Chapter $chapter, array $data): Lesson
     {
-        return $chapter->lessons()->create($data);
+        return $chapter->lessons()->create($data)->load('chapter.course');
     }
     public function updateLesson(Lesson $lesson, array $data): Lesson
     {
         $lesson->update($data);
-        return $lesson->refresh();
+        return $lesson->refresh()->load('chapter.course');
     }
     public function deleteLesson(Lesson $lesson): void
     {

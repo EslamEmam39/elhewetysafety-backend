@@ -162,8 +162,22 @@ Lesson video delivery follows the same layered flow. The Admin upload endpoint
 passes the validated file to `VideoService`; storage operations stay in the
 Service while `VideoRepository` owns Lesson metadata persistence and Enrollment
 access queries. Playback responses expose a short-lived URL derived from the
-stored disk and key. Controllers and Resources never expose a permanent storage
-URL, and Laravel does not stream production video bytes through the API process.
+stored disk and key. For the local development disk, that signed URL targets a
+stream Service that supports HTTP byte ranges so browsers can seek and resume.
+Production object storage still returns its provider/CDN temporary URL;
+Controllers and Resources never expose a permanent storage URL, and Laravel
+does not stream production video bytes through the API process.
+The Admin preview endpoint is protected by `LessonPolicy` and reuses the same
+readiness, storage-existence, and temporary-URL generation rules without an
+Enrollment requirement. The administration client never receives a storage key.
+
+Curriculum administration exposes global Chapter and Lesson lists for the
+independent dashboard modules while preserving the nested create contracts.
+Repositories eager-load the owning Course or Chapter/Course context, Resources
+expose only stable codes, slugs, and titles, and the same Policies protect both
+global and parent-scoped reads. Lesson updates may accept a stable
+`chapter_code`; the Service resolves it through the Repository to the internal
+`chapter_id` and rejects duplicate lesson positions within the selected Chapter.
 
 ## Policies and Spatie Permissions
 

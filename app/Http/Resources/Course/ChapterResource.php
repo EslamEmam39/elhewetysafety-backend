@@ -13,6 +13,7 @@ class ChapterResource extends JsonResource
             'code' => $this->code,
             'title' => $this->title,
             'sort_order' => $this->sort_order,
+            'course' => CourseReferenceResource::make($this->whenLoaded('course')),
             'lessons' => LessonResource::collection($this->whenLoaded('lessons')),
         ];
     }

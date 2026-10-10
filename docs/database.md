@@ -179,6 +179,11 @@ than introducing a one-row video table. The storage key is provider-neutral;
 permanent public URLs are neither stored nor exposed. Replacing a source video
 updates this metadata and removes the superseded object after persistence.
 
+Lesson reassignment does not store a duplicated Chapter code. The Admin API
+accepts `chapter_code` as a stable transport reference, then resolves and stores
+only the existing normalized `lessons.chapter_id` foreign key. The existing
+unique `(chapter_id, sort_order)` constraint remains the final ordering boundary.
+
 ## Course Reviews
 
 `course_reviews` is the normalized User-to-Course rating relation. Rating,

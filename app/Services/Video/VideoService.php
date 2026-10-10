@@ -11,6 +11,7 @@ use App\Repositories\Video\VideoRepository;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -66,6 +67,19 @@ class VideoService
             throw new EnrollmentAccessDeniedException;
         }
 
+        return $this->playbackMetadata($lesson);
+    }
+
+    public function adminPlayback(Lesson $lesson): array
+    {
+        return $this->playbackMetadata(
+            $this->repository->loadLessonContext($lesson)
+        );
+    }
+
+    private function playbackMetadata(Lesson $lesson): array
+    {
+
         if ($lesson->video_status !== 'ready' || ! $lesson->video_storage_key) {
             throw new VideoNotReadyException;
         }
@@ -82,7 +96,9 @@ class VideoService
         );
 
         try {
-            $playbackUrl = $storage->temporaryUrl($lesson->video_storage_key, $expiresAt);
+            $playbackUrl = config("filesystems.disks.{$disk}.driver") === 'local'
+                ? URL::temporarySignedRoute('lessons.video.stream', $expiresAt, ['lesson' => $lesson->code])
+                : $storage->temporaryUrl($lesson->video_storage_key, $expiresAt);
         } catch (Throwable $exception) {
             report($exception);
             throw new VideoStorageException;

@@ -1363,6 +1363,30 @@
           "name": "Chapters",
           "item": [
             {
+              "name": "All",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local}}/admin/chapters",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "chapters"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "All By Course",
               "request": {
                 "method": "GET",
@@ -1523,6 +1547,30 @@
           "name": "Lessons",
           "item": [
             {
+              "name": "All",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local}}/admin/lessons",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "lessons"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "All By Chapter",
               "request": {
                 "method": "GET",
@@ -1631,7 +1679,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\"title\":\"Updated Scene Safety\",\"is_free_preview\":true}",
+                  "raw": "{\"title\":\"Updated Scene Safety\",\"chapter_code\":\"fire-safety-essentials\",\"sort_order\":1,\"is_free_preview\":true}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1688,6 +1736,33 @@
                     "lessons",
                     ":lesson_code",
                     "video"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Preview Video",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{local}}/admin/lessons/:lesson_code/video/playback",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "lessons",
+                    ":lesson_code",
+                    "video",
+                    "playback"
                   ]
                 }
               },
@@ -3114,6 +3189,39 @@
               ]
             }
           },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body?.data?.playback_url) pm.collectionVariables.set('playback_url', body.data.playback_url);"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Stream Authorized Video Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Range",
+                "value": "bytes=0-1023",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{playback_url}}",
+              "host": [
+                "{{playback_url}}"
+              ]
+            },
+            "description": "Use the temporary playback_url returned by Authorize Playback. A byte-range request returns 206 Partial Content."
+          },
           "response": []
         }
       ]
@@ -3428,6 +3536,11 @@
     {
       "key": "video_duration_seconds",
       "value": "600",
+      "type": "string"
+    },
+    {
+      "key": "playback_url",
+      "value": "",
       "type": "string"
     }
   ]

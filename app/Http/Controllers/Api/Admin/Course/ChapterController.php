@@ -13,6 +13,7 @@ class ChapterController extends Controller
 {
     use ApiResponse;
     public function __construct(private readonly AdminCourseService $service) {}
+    public function all(): JsonResponse { $this->authorize('viewAny', Chapter::class); return $this->successResponse(ChapterResource::collection($this->service->allChapters())); }
     public function index(Course $course): JsonResponse { $this->authorize('viewAny', Chapter::class); return $this->successResponse(ChapterResource::collection($this->service->chapters($course))); }
     public function store(StoreChapterRequest $request, Course $course): JsonResponse { $this->authorize('create', Chapter::class); return $this->successResponse(ChapterResource::make($this->service->createChapter($course, $request->validated())), 'Chapter created successfully', 201); }
     public function show(Chapter $chapter): JsonResponse { $this->authorize('view', $chapter); return $this->successResponse(ChapterResource::make($chapter->load('lessons'))); }

@@ -226,6 +226,10 @@ position may move forward or backward for resume behavior but cannot exceed a
 known Lesson duration. Completion is monotonic: setting `is_completed` records
 `completed_at` once, and ordinary progress updates cannot undo completion.
 
+Administration may move a Lesson between existing Chapters. The move preserves
+the Lesson's stable code and video metadata, and its `sort_order` must remain
+available within the destination Chapter.
+
 ## Course Reviews and Course Aggregates
 
 A CourseReview belongs to one User and one Course. Only a User with an active

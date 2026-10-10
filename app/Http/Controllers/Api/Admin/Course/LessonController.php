@@ -13,6 +13,7 @@ class LessonController extends Controller
 {
     use ApiResponse;
     public function __construct(private readonly AdminCourseService $service) {}
+    public function all(): JsonResponse { $this->authorize('viewAny', Lesson::class); return $this->successResponse(LessonResource::collection($this->service->allLessons())); }
     public function index(Chapter $chapter): JsonResponse { $this->authorize('viewAny', Lesson::class); return $this->successResponse(LessonResource::collection($this->service->lessons($chapter))); }
     public function store(StoreLessonRequest $request, Chapter $chapter): JsonResponse { $this->authorize('create', Lesson::class); return $this->successResponse(LessonResource::make($this->service->createLesson($chapter, $request->validated())), 'Lesson created successfully', 201); }
     public function show(Lesson $lesson): JsonResponse { $this->authorize('view', $lesson); return $this->successResponse(LessonResource::make($lesson)); }

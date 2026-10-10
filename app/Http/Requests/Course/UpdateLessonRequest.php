@@ -18,13 +18,11 @@ class UpdateLessonRequest extends ApiFormRequest
                 Rule::unique('lessons', 'code')->ignore($this->route('lesson')),
             ],
             'title' => ['sometimes', 'string', 'max:255'],
+            'chapter_code' => ['sometimes', 'string', 'exists:chapters,code'],
             'sort_order' => [
                 'sometimes',
                 'integer',
                 'min:1',
-                Rule::unique('lessons', 'sort_order')
-                    ->where('chapter_id', $this->route('lesson')->chapter_id)
-                    ->ignore($this->route('lesson')),
             ],
             'is_free_preview' => ['sometimes', 'boolean'],
         ];

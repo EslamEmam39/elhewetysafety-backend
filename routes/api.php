@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\CourseReview\CourseReviewController;
 use App\Http\Controllers\Api\ProfessionalField\TargetedProfessionalFieldController;
 use App\Http\Controllers\Api\Student\StudentProfileController;
 use App\Http\Controllers\Api\Video\LessonPlaybackController;
+use App\Http\Controllers\Api\Video\LessonVideoStreamController;
 use Illuminate\Support\Facades\Route;
 
 // Authentication and account routes.
@@ -68,6 +69,11 @@ Route::middleware(['auth:sanctum', 'not_banned', 'role:student'])->group(functio
     Route::patch('courses/{course:slug}/reviews/me', [CourseReviewController::class, 'update']);
     Route::delete('courses/{course:slug}/reviews/me', [CourseReviewController::class, 'destroy']);
 });
+
+// Temporary signed lesson-video delivery route.
+Route::get('lessons/{lesson:code}/stream', [LessonVideoStreamController::class, 'show'])
+    ->middleware('signed')
+    ->name('lessons.video.stream');
 
 // Authenticated user device management routes.
 Route::middleware(['auth:sanctum', 'not_banned'])->prefix('devices')->group(function () {

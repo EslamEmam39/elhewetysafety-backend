@@ -16,6 +16,7 @@ class LessonResource extends JsonResource
             'duration_seconds' => $this->duration_seconds,
             'video_status' => $this->video_status,
             'is_free_preview' => $this->is_free_preview,
+            'chapter' => ChapterReferenceResource::make($this->whenLoaded('chapter')),
         ];
     }
 }
