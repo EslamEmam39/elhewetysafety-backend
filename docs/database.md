@@ -140,6 +140,10 @@ Payment attempts similarly snapshot amount and currency from their Order and use
 restricted foreign keys to Orders and PaymentGateways. Provider references are
 unique within their gateway, while server-generated idempotency keys are globally
 unique.
+Cash confirmation stores the confirming administrator as nullable
+`payments.cash_confirmed_by_user_id`, a restricted foreign key to Users. It is
+an atomic audit relationship for a Cash Payment and does not duplicate the
+Payment's `paid_at` completion timestamp or create an unstructured audit field.
 
 ## Enrollments
 

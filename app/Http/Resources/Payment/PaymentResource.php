@@ -17,6 +17,7 @@ class PaymentResource extends JsonResource
             'order' => OrderResource::make($this->whenLoaded('order')),
             'provider_reference' => $this->provider_reference,
             'failure_reason' => $this->failure_reason,
+            'cash_confirmed_by_user_uuid' => $this->whenLoaded('cashConfirmedBy', fn () => $this->cashConfirmedBy?->uuid),
             'paid_at' => $this->paid_at,
             'refunded_at' => $this->refunded_at,
             'created_at' => $this->created_at

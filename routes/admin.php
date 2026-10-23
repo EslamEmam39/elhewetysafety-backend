@@ -26,7 +26,7 @@ Route::prefix('admin')->group(function () {
     // Public admin authentication route.
     Route::post('login', [AuthController::class, 'adminLogin'])->middleware('throttle:6,1');
 
-    // Protected administration routes.
+    // Every administration route except login requires an authenticated admin.
     Route::middleware(['auth:sanctum', 'not_banned', 'role:admin'])->group(function () {
         // Roles and permissions management.
         Route::apiResource('roles', RoleController::class);
@@ -39,38 +39,26 @@ Route::prefix('admin')->group(function () {
         Route::apiResource('countries', CountryController::class);
         Route::apiResource('cities', CityController::class);
 
-        // Payment gateway reference management.
-        Route::apiResource('payment-gateways', PaymentGatewayController::class);
-
-        // Order monitoring routes.
-        Route::prefix('orders')->group(function () {
-            Route::get('/', [OrderController::class, 'index']);
-            Route::get('{order:code}', [OrderController::class, 'show']);
-        });
-        // Payment attempt monitoring routes.
-        Route::prefix('payments')->group(function () {
-            Route::get('/', [PaymentController::class, 'index']);
-            Route::get('{payment:code}', [PaymentController::class, 'show']);
-        });
-
-        // Enrollment monitoring and access management routes.
-        Route::prefix('enrollments')->group(function () {
-            Route::get('/', [EnrollmentController::class, 'index']);
-            Route::get('{enrollment:code}', [EnrollmentController::class, 'show']);
-            Route::put('{enrollment:code}/revoke', [EnrollmentController::class, 'revoke']);
-            Route::put('{enrollment:code}/activate', [EnrollmentController::class, 'activate']);
+        // User identity, authorization, and moderation management.
+        Route::prefix('users')->group(function () {
+            Route::get('/', [UserController::class, 'index']);
+            Route::get('{user:uuid}', [UserController::class, 'show']);
+            Route::patch('{user:uuid}', [UserController::class, 'update']);
+            Route::put('{user:uuid}/roles', [AuthorizationAssignmentController::class, 'syncUserRoles']);
+            Route::put('{user:uuid}/ban', [UserModerationController::class, 'ban']);
+            Route::delete('{user:uuid}/ban', [UserModerationController::class, 'unban']);
         });
 
         // Device monitoring and revocation routes.
         Route::get('users/{user:uuid}/devices', [DeviceController::class, 'index']);
         Route::put('devices/{device:uuid}/revoke', [DeviceController::class, 'revoke']);
 
-        // Course review monitoring and moderation routes.
-        Route::prefix('course-reviews')->group(function () {
-            Route::get('/', [CourseReviewController::class, 'index']);
-            Route::get('{courseReview:code}', [CourseReviewController::class, 'show']);
-            Route::put('{courseReview:code}/hide', [CourseReviewController::class, 'hide']);
-            Route::put('{courseReview:code}/publish', [CourseReviewController::class, 'publish']);
+        // Student profile management.
+        Route::prefix('students')->group(function () {
+            Route::get('/', [StudentController::class, 'index']);
+            Route::get('{user:uuid}', [StudentController::class, 'show']);
+            Route::patch('{user:uuid}', [StudentController::class, 'update']);
+            Route::delete('{user:uuid}', [StudentController::class, 'destroy']);
         });
 
         // Course catalog management.
@@ -101,22 +89,36 @@ Route::prefix('admin')->group(function () {
             Route::delete('{lesson:code}', [LessonController::class, 'destroy']);
         });
 
-        // Student profile management.
-        Route::prefix('students')->group(function () {
-            Route::get('/', [StudentController::class, 'index']);
-            Route::get('{user:uuid}', [StudentController::class, 'show']);
-            Route::patch('{user:uuid}', [StudentController::class, 'update']);
-            Route::delete('{user:uuid}', [StudentController::class, 'destroy']);
+        // Payment gateway reference management.
+        Route::apiResource('payment-gateways', PaymentGatewayController::class);
+
+        // Order monitoring routes.
+        Route::prefix('orders')->group(function () {
+            Route::get('/', [OrderController::class, 'index']);
+            Route::get('{order:code}', [OrderController::class, 'show']);
+        });
+        // Payment attempt monitoring routes.
+        Route::prefix('payments')->group(function () {
+            Route::get('/', [PaymentController::class, 'index']);
+            Route::get('{payment:code}', [PaymentController::class, 'show']);
+            Route::put('{payment:code}/cash/confirm', [PaymentController::class, 'confirmCash']);
         });
 
-        // User identity, authorization, and moderation management.
-        Route::prefix('users')->group(function () {
-            Route::get('/', [UserController::class, 'index']);
-            Route::get('{user:uuid}', [UserController::class, 'show']);
-            Route::patch('{user:uuid}', [UserController::class, 'update']);
-            Route::put('{user:uuid}/roles', [AuthorizationAssignmentController::class, 'syncUserRoles']);
-            Route::put('{user:uuid}/ban', [UserModerationController::class, 'ban']);
-            Route::delete('{user:uuid}/ban', [UserModerationController::class, 'unban']);
+        // Enrollment monitoring and access management routes.
+        Route::prefix('enrollments')->group(function () {
+            Route::get('/', [EnrollmentController::class, 'index']);
+            Route::get('{enrollment:code}', [EnrollmentController::class, 'show']);
+            Route::put('{enrollment:code}/revoke', [EnrollmentController::class, 'revoke']);
+            Route::put('{enrollment:code}/activate', [EnrollmentController::class, 'activate']);
         });
+
+        // Course review monitoring and moderation routes.
+        Route::prefix('course-reviews')->group(function () {
+            Route::get('/', [CourseReviewController::class, 'index']);
+            Route::get('{courseReview:code}', [CourseReviewController::class, 'show']);
+            Route::put('{courseReview:code}/hide', [CourseReviewController::class, 'hide']);
+            Route::put('{courseReview:code}/publish', [CourseReviewController::class, 'publish']);
+        });
+
     });
 });

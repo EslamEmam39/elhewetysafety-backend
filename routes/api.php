@@ -18,7 +18,11 @@ use App\Http\Controllers\Api\Student\StudentProfileController;
 use App\Http\Controllers\Api\Video\LessonPlaybackController;
 use App\Http\Controllers\Api\Video\LessonVideoStreamController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Payment\PaymobWebhookController;
 
+// Paymob sends a signed server-to-server callback. It must not require a student token.
+Route::post('payments/paymob/webhook', PaymobWebhookController::class)
+    ->middleware('throttle:60,1');
 // Authentication and account routes.
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
@@ -53,17 +57,23 @@ Route::middleware(['auth:sanctum', 'not_banned', 'role:student'])
         Route::get('{order:code}/payments', [PaymentController::class, 'index']);
         Route::post('{order:code}/payments', [PaymentController::class, 'store']);
     });
-Route::middleware(['auth:sanctum','not_banned','role:student'])->get('payments/{payment:code}',[PaymentController::class,'show']);
+Route::middleware(['auth:sanctum', 'not_banned', 'role:student'])->get('payments/{payment:code}', [PaymentController::class, 'show']);
 
 // Authenticated student enrollment and protected course content routes.
 Route::middleware(['auth:sanctum', 'not_banned', 'role:student'])->group(function () {
+    // Enrollment monitoring and access management routes.
     Route::get('enrollments', [EnrollmentController::class, 'index']);
     Route::get('enrollments/{enrollment:code}', [EnrollmentController::class, 'show']);
     Route::post('courses/{course:slug}/enroll', [EnrollmentController::class, 'store']);
     Route::get('courses/{course:slug}/content', [EnrollmentController::class, 'content']);
+
+
+// Lesson progress and playback routes.
     Route::get('courses/{course:slug}/progress', [LessonProgressController::class, 'index']);
     Route::put('lessons/{lesson:code}/progress', [LessonProgressController::class, 'update']);
     Route::get('lessons/{lesson:code}/playback', [LessonPlaybackController::class, 'show']);
+
+    // Course review routes.
     Route::get('courses/{course:slug}/reviews/me', [CourseReviewController::class, 'mine']);
     Route::post('courses/{course:slug}/reviews', [CourseReviewController::class, 'store']);
     Route::patch('courses/{course:slug}/reviews/me', [CourseReviewController::class, 'update']);

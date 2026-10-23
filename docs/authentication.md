@@ -101,7 +101,9 @@ structured error payload.
 
 Admin-only endpoints ban and unban Users by public UUID. An administrator
 cannot ban their own account. All administration endpoints use the
-`/api/admin` prefix.
+`/api/admin` prefix. `POST /api/admin/login` is the only public administration
+route; every other `/api/admin` endpoint runs `auth:sanctum`, `not_banned`, and
+`role:admin` before its Policy authorization.
 
 ## Logout
 
@@ -156,6 +158,9 @@ ownership is enforced in `OrderService` and Repository queries.
 Payment administration uses `payments.view` through `PaymentPolicy`. Student
 Payment routes enforce ownership through the owning Order and never accept a
 paid, failed, or refunded status from client input.
+Cash confirmation is a separate `payments.confirm-cash` Policy ability. It is
+available only to an Admin with that permission and never allows a client to
+mark a Payment paid.
 Enrollment administration uses `enrollments.view` and `enrollments.manage`
 through `EnrollmentPolicy`. Student Enrollment queries are scoped to the
 authenticated User, and protected Course content requires an active owned

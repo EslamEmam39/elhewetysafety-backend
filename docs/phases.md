@@ -313,7 +313,7 @@ Status: **Planned**
 
 ## Phase 3 — Real Payment Integrations
 
-Status: **Planned**
+Status: **In Progress**
 
 Dependencies: Phase 1 Orders, PaymentGateways, Payments, and Enrollments.
 
@@ -330,6 +330,33 @@ Scope:
   services, `PaymentGatewayFactory`, and the orchestrating `PaymentService`.
 
 Implement one provider vertically before adding another provider.
+
+### Slice 3.1 — Cash Payment Confirmation
+
+Status: **In Progress**
+
+- `cash` is an active normalized payment-gateway code and is resolved through
+  `PaymentGatewayInterface` and `PaymentGatewayFactory`.
+- Students create a pending Cash Payment attempt and receive a manual-confirmation
+  next action; this does not grant Course access.
+- An administrator with `payments.confirm-cash` can confirm only a pending Cash
+  Payment whose Order is still pending.
+- Confirmation atomically marks the Payment and Order paid and creates the
+  payment-backed active Enrollment. The Payment stores the confirming User for
+  financial audit history.
+- PostgreSQL migration is applied. Remaining before this slice can become
+  Completed: exercise the seeded/Postman Cash confirmation flow.
+
+### Slice 3.2 — Paymob Checkout and Webhook
+
+Status: **Completed**
+
+- Backend creates Paymob Intention checkout sessions using server-only credentials.
+- A public HMAC-verified transaction callback reconciles the saved provider order
+  reference, amount, and currency, then completes the Order, Payment, and
+  Enrollment atomically through `PaymentService`.
+- A real sandbox callback through the public tunnel has verified the resulting
+  paid Order, paid Payment, and payment-backed active Enrollment.
 
 ## Phase 4 — Learning Completion
 

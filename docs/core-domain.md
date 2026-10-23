@@ -135,14 +135,26 @@ A Payment is one payment attempt, not the purchase itself. An Order may have
 multiple Payments, and each Payment belongs to a PaymentGateway.
 Each attempt exposes a stable code and snapshots amount and currency from its
 Order. Server-generated idempotency keys and gateway-scoped provider references
-prepare for retry-safe webhook processing. Core creation records a pending
-attempt only; provider initiation remains unavailable until Phase 3.
+prepare for retry-safe webhook processing. Payment creation records a pending
+attempt; Phase 3 provider services determine the safe next action.
 
 Never trust payment success sent by the frontend. Only verified backend or
 provider communication may mark it paid. The design must support webhook
 idempotency later.
 
 Possible statuses are `pending`, `paid`, `failed`, and `refunded`.
+
+Cash is a manual gateway, not a frontend payment-success signal. A Cash attempt
+remains pending until an authorized administrator confirms that specific pending
+Cash Payment while its Order is pending. Confirmation records the confirming
+User on the Payment, marks the Payment and Order paid, and creates the active
+payment-backed Enrollment in one transaction. A signed Paymob transaction
+callback validates the originating attempt, provider order reference, amount,
+and currency before it invokes that same completion transaction. It cannot
+confirm Fawry or any future non-Cash Payment.
+Only a pending Paymob attempt can complete; repeated callbacks for an already
+final Payment are idempotent no-ops, and a successful completion clears any
+prior provider failure reason.
 
 ## Enrollments
 

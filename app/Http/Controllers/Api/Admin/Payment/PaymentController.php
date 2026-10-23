@@ -13,4 +13,13 @@ class PaymentController extends Controller
     public function __construct(private readonly PaymentService $service) {}
     public function index(AdminPaymentIndexRequest $request): JsonResponse { $this->authorize('viewAny',Payment::class); return $this->successResponse(PaymentResource::collection($this->service->adminPayments($request->validated()))); }
     public function show(Payment $payment): JsonResponse { $this->authorize('view',$payment); return $this->successResponse(PaymentResource::make($this->service->adminPayment($payment))); }
+    public function confirmCash(Payment $payment): JsonResponse
+    {
+        $this->authorize('confirmCash', $payment);
+
+        return $this->successResponse(
+            PaymentResource::make($this->service->confirmCash(request()->user(), $payment)),
+            'Cash payment confirmed successfully'
+        );
+    }
 }

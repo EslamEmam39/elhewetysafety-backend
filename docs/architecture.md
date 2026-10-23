@@ -87,20 +87,26 @@ service implementations:
 ```text
 PaymentGatewayInterface
         ↑
-PaymobService / FawryService
+CashService / PaymobService / FawryService
         ↑
 PaymentGatewayFactory
         ↑
 PaymentService
 ```
 
-`PaymobService` and `FawryService` implement `PaymentGatewayInterface`.
+`CashService`, `PaymobService`, and `FawryService` implement
+`PaymentGatewayInterface`.
 `PaymentGatewayFactory` selects the implementation from the gateway's stable
 code, and `PaymentService` owns orchestration, persistence coordination, and
 transactions. Provider services do not create Orders, update Enrollments, or
 construct HTTP responses. Provider secrets remain in environment-backed config.
-The concrete provider integrations are implemented in Phase 3, after the Core
-Order, Payment, and Enrollment foundations exist.
+The Cash implementation returns a next-action instruction and has no external
+webhook. Its authorized Admin confirmation calls PaymentService, which locks the
+Payment and Order and atomically records Payment paid, Order paid, and a
+payment-backed Enrollment. Paymob creates its checkout Intention from the
+backend and accepts payment completion only through an HMAC-verified public
+server-to-server callback; the browser redirect is UX only. Fawry remains a
+separate provider implementation in Phase 3.
 
 Enrollment access follows the standard feature pipeline. `EnrollmentService`
 owns free-course eligibility, idempotent access creation, and administrative

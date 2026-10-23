@@ -4,6 +4,7 @@ use App\Enums\EnrollmentSource;
 use App\Enums\EnrollmentStatus;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class EnrollmentRepository
@@ -23,6 +24,28 @@ class EnrollmentRepository
     public function createFree(User $user, Course $course, string $code): Enrollment
     {
         return Enrollment::create(['code' => $code, 'user_id' => $user->id, 'course_id' => $course->id, 'source' => EnrollmentSource::Free, 'status' => EnrollmentStatus::Active, 'enrolled_at' => now()])->load(['course.category', 'course.instructor']);
+    }
+
+    public function existingForPaymentGrant(User $user, Course $course): ?Enrollment
+    {
+        return Enrollment::query()
+            ->whereBelongsTo($user)
+            ->whereBelongsTo($course)
+            ->lockForUpdate()
+            ->first();
+    }
+
+    public function createFromPayment(User $user, Course $course, Payment $payment, string $code): Enrollment
+    {
+        return Enrollment::create([
+            'code' => $code,
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+            'payment_id' => $payment->id,
+            'source' => EnrollmentSource::Payment,
+            'status' => EnrollmentStatus::Active,
+            'enrolled_at' => now(),
+        ])->load(['course.category', 'course.instructor', 'payment']);
     }
     public function paginateForUser(User $user, int $perPage): LengthAwarePaginator
     {

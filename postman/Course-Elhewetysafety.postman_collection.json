@@ -2042,6 +2042,32 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "Confirm Cash Payment",
+              "request": {
+                "description": "Requires an Admin Bearer Token and the payments.confirm-cash permission. This endpoint only confirms a pending Cash payment.",
+                "method": "PUT",
+                "header": {
+                  "key": "Accept",
+                  "value": "application/json",
+                  "type": "text"
+                },
+                "url": {
+                  "raw": "{{local}}/admin/payments/{{cash_payment_code}}/cash/confirm",
+                  "host": [
+                    "{{local}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "payments",
+                    "{{cash_payment_code}}",
+                    "cash",
+                    "confirm"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         },
@@ -2887,6 +2913,60 @@
           "response": []
         },
         {
+          "name": "Create Paymob Attempt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.success && response.data?.payment?.code) {",
+                  "    pm.collectionVariables.set('paymob_payment_code', response.data.payment.code);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "description": "Creates a Paymob Intention and returns data.next_action.checkout_url. Open it in a browser; the signed webhook, not the redirect, marks the payment as paid.",
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"gateway_code\":\"paymob\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{local}}/orders/:order_code/payments",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "orders",
+                ":order_code",
+                "payments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Get",
           "request": {
             "method": "GET",
@@ -2959,7 +3039,21 @@
           "response": []
         },
         {
-          "name": "Create Attempt",
+          "name": "Create Cash Attempt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.success && response.data?.payment?.code) {",
+                  "    pm.collectionVariables.set('cash_payment_code', response.data.payment.code);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -2976,7 +3070,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\"gateway_code\":\"paymob\"}",
+              "raw": "{\"gateway_code\":\"cash\"}",
               "options": {
                 "raw": {
                   "language": "json"

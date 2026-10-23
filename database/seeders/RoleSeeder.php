@@ -38,6 +38,7 @@ class RoleSeeder extends Seeder
             'payment-gateways.manage',
             'orders.view',
             'payments.view',
+            'payments.confirm-cash',
             'enrollments.view',
             'enrollments.manage',
             'devices.view',

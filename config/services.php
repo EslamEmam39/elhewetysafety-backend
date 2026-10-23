@@ -35,4 +35,19 @@ return [
         ],
     ],
 
+    'cash' => [
+        'instructions' => env('CASH_PAYMENT_INSTRUCTIONS'),
+    ],
+
+
+    'paymob' => [
+        'secret_key' => env('PAYMOB_SECRET_KEY'),
+        'public_key' => env('PAYMOB_PUBLIC_KEY'),
+        'integration_id' => env('PAYMOB_INTEGRATION_ID'),
+        'hmac_secret' => env('PAYMOB_HMAC_SECRET'),
+        'notification_url' => env('PAYMOB_NOTIFICATION_URL'),
+        'redirection_url' => env('PAYMOB_REDIRECTION_URL'),
+    ],
+
+
 ];
