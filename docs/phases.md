@@ -142,6 +142,8 @@ Status: **Completed**
 - Private video storage keys and processing status only.
 - Public read API for published Course content.
 - Admin CRUD for categories, Courses, Chapters, and Lessons.
+- Admin-only course-cover upload with validated JPG, PNG, or WebP media and a
+  public presentation URL; storage keys remain internal.
 - Global administration lists for Chapters and Lessons include their normalized
   parent references, while creation remains scoped to Course or Chapter.
 - Lesson administration can reassign an existing Lesson to another Chapter by

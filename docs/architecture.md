@@ -177,6 +177,12 @@ The Admin preview endpoint is protected by `LessonPolicy` and reuses the same
 readiness, storage-existence, and temporary-URL generation rules without an
 Enrollment requirement. The administration client never receives a storage key.
 
+Course cover uploads use the same layered boundary: the admin controller passes
+a validated image to `CourseThumbnailService`, which owns public-disk storage,
+replacement cleanup, and calls the Course repository for persistence. Course
+resources return only a nullable public `thumbnail_url`; internal keys are not
+API contract fields.
+
 Curriculum administration exposes global Chapter and Lesson lists for the
 independent dashboard modules while preserving the nested create contracts.
 Repositories eager-load the owning Course or Chapter/Course context, Resources

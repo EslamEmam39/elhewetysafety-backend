@@ -129,6 +129,11 @@ Category; Instructor is an optional existing User. Category and Instructor
 deletion is restricted while referenced. Chapters and Lessons use globally
 unique public codes while retaining numeric foreign keys internally.
 
+`courses.thumbnail_storage_key` remains the provider-neutral internal location
+of an intentionally public course cover. It is not a client-writable API field;
+the upload workflow persists it after validated media storage. No separate
+thumbnail table is needed because one current cover depends only on its Course.
+
 ## Money
 
 Use decimal values, never float or double. Orders store purchase price and

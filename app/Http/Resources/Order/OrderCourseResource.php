@@ -12,7 +12,7 @@ class OrderCourseResource extends JsonResource
         return [
             'slug' => $this->slug,
             'title' => $this->title,
-            'thumbnail_storage_key' => $this->thumbnail_storage_key,
+            'thumbnail_url' => $this->thumbnail_url,
         ];
     }
 }

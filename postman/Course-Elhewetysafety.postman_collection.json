@@ -1248,7 +1248,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\"title\":\"First Aid Essentials\",\"slug\":\"first-aid-essentials\",\"description\":\"First aid fundamentals\",\"price\":799,\"currency\":\"EGP\",\"level\":\"beginner\",\"status\":\"draft\",\"thumbnail_storage_key\":null,\"course_category_slug\":\"first-aid\",\"instructor_uuid\":null}",
+                  "raw": "{\"title\":\"First Aid Essentials\",\"slug\":\"first-aid-essentials\",\"description\":\"First aid fundamentals\",\"price\":799,\"currency\":\"EGP\",\"level\":\"beginner\",\"status\":\"draft\",\"course_category_slug\":\"first-aid\",\"instructor_uuid\":null}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1328,6 +1328,35 @@
                     "courses",
                     ":slug"
                   ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Upload Thumbnail",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "thumbnail",
+                      "type": "file",
+                      "src": ""
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{local}}/admin/courses/:slug/thumbnail",
+                  "host": ["{{local}}"],
+                  "path": ["admin", "courses", ":slug", "thumbnail"]
                 }
               },
               "response": []

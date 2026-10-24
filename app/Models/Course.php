@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Course extends Model
 {
@@ -14,6 +15,13 @@ class Course extends Model
     protected function casts(): array
     {
         return ['price' => 'decimal:2', 'published_at' => 'datetime'];
+    }
+
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        return $this->thumbnail_storage_key
+            ? Storage::disk((string) config('course.thumbnail_disk'))->url($this->thumbnail_storage_key)
+            : null;
     }
 
     public function chapters(): HasMany

@@ -65,6 +65,7 @@ Route::prefix('admin')->group(function () {
         Route::apiResource('course-categories', CourseCategoryController::class);
         Route::apiResource('courses', CourseController::class);
         Route::prefix('courses')->group(function () {
+            Route::post('{course:slug}/thumbnail', [CourseController::class, 'uploadThumbnail']);
             Route::get('{course:slug}/chapters', [ChapterController::class, 'index']);
             Route::post('{course:slug}/chapters', [ChapterController::class, 'store']);
         });

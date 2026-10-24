@@ -16,7 +16,7 @@ class CourseResource extends JsonResource
             'price' => $this->price,
             'currency' => $this->currency,
             'level' => $this->level,
-            'thumbnail_storage_key' => $this->thumbnail_storage_key,
+            'thumbnail_url' => $this->thumbnail_url,
             'status' => $this->status,
             'published_at' => $this->published_at,
             'lessons_count' => $this->whenHas('lessons_count', (int) $this->lessons_count),

@@ -81,6 +81,12 @@ is implemented; instructor identity reuses User authentication through nullable
 Courses may remain uncategorized or without an instructor during migration;
 new Courses require an active CourseCategory.
 
+Course cover uploads are an Admin-only multipart workflow. The database stores
+only the provider-neutral `thumbnail_storage_key`; clients never submit or
+receive that key. `CourseResource` and order course summaries expose nullable
+`thumbnail_url` for the intentionally public catalog cover instead. Replacing a
+cover removes the prior object after its replacement persists.
+
 ```text
 Course 1 ── M Chapters
 Chapter 1 ── M Lessons
