@@ -303,6 +303,10 @@ storage/CDN temporary URLs. Nuxt requests the temporary playback URL, restores a
 incomplete saved position, and persists bounded progress during playback, on
 pause, before lesson changes, and on completion.
 
+The interim production profile accepts only pre-compressed MP4 lesson videos
+up to 500 MB on the existing server. It retains protected, temporary local
+playback while HLS/transcoding remains deferred to the later delivery slice.
+
 ### Slice 2.2 — Production Private Delivery
 
 Status: **Planned**
