@@ -172,6 +172,10 @@ Course Review creation and update require the same authenticated active
 Enrollment. Ownership scopes each Student's read, update, and delete operations.
 Admin moderation uses `course-reviews.view` and `course-reviews.manage`
 through `CourseReviewPolicy`; public requests receive visible reviews only.
+Certificate administration uses `certificates.view` and `certificates.issue`
+through `CertificatePolicy`. Only an authorized administrator can issue a
+certificate; public verification and PDF download use its stable code and do
+not require a token.
 
 ## Local Seed Accounts
 

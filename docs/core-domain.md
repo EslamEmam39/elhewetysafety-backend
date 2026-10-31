@@ -103,15 +103,13 @@ Lessons store private storage metadata rather than permanent public URLs:
 `is_free_preview`.
 
 Possible video states are `pending`, `processing`, `ready`, and `failed`.
-Private storage, CDN delivery, signed playback authorization, and HLS processing
-are implemented in Phase 2 after the Core access boundary. Development may use
-a local storage disk for the first free-video slice, but production storage URLs
-remain derived from storage keys and are never persisted as permanent public
-Lesson URLs. Paid playback always requires an active Enrollment.
-The first local upload flow records an Admin-supplied duration after validation;
-the production processing workflow will replace that value with media-probed
-metadata. Playback authorization requires an active Enrollment even for a free
-Course; `is_free_preview` does not bypass the protected playback endpoint.
+Phase 2 provides private storage, CDN delivery, short-lived playback
+authorization, and HLS processing. Development may use a local storage disk,
+but production storage URLs remain derived from storage keys and are never
+persisted as permanent public Lesson URLs. Paid playback always requires an
+active Enrollment. The production processing workflow derives media metadata;
+playback authorization requires an active Enrollment even for a free Course, so
+`is_free_preview` does not bypass the protected playback endpoint.
 
 ## Orders
 
@@ -263,10 +261,27 @@ Course summary values are derived rather than duplicated: duration is the sum
 of Lesson durations, Lesson count comes from Lessons, active Student count from
 active Enrollments, and rating aggregates from visible CourseReviews.
 
+## Certificates
+
+A Certificate is an immutable historical record issued manually by an
+authorized administrator for one User and one Course. The unique
+`(user_id, course_id)` constraint permits one certificate for that completion
+pair. It records stable public `code`, the issuing administrator, `issued_at`,
+and a generated PDF storage location. Recipient English and Arabic names and
+Course title are snapshots so later profile or catalog edits cannot rewrite an
+issued certificate.
+
+The verification code is public: `GET /api/certificates/{code}/verify` returns
+the certificate details and `GET /api/certificates/{code}/pdf` downloads its
+PDF. Creation and administrative inspection are restricted to administrators
+with `certificates.issue` and `certificates.view`; no completion rule, quiz
+result, or frontend input can issue a certificate in this slice. An authorized
+administrator may regenerate the stored PDF from the immutable snapshots when
+the presentation template changes.
+
 ## Outside the Current Core Phase
 
-Private video infrastructure is now the approved Phase 2 scope. Real Paymob or
-Fawry integration and production webhooks remain Phase 3 work. Quizzes,
-certificates, coupons, subscriptions, instructor marketplace, advanced
-analytics, and an affiliate system still require their separately approved
-roadmap slices.
+Private video infrastructure and the Cash/Paymob payment workflows are complete.
+Fawry remains a separately approved future provider. Completion rules, quizzes,
+coupons, subscriptions, instructor marketplace, advanced analytics, and an
+affiliate system still require their separately approved roadmap slices.

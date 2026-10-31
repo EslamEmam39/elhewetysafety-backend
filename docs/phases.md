@@ -27,7 +27,7 @@ Status: **Completed**
 
 Scope:
 
-- Laravel 12 API project running through Docker.
+- Laravel 12 API project runnable through the local PHP runtime.
 - PostgreSQL development database.
 - Nuxt frontend integration.
 - Laravel Sanctum Bearer Token authentication.
@@ -253,7 +253,7 @@ Status: **Completed**
 
 ## Phase 2 — Video Infrastructure
 
-Status: **In Progress**
+Status: **Completed**
 
 Dependencies: Phase 1 Course access, Lessons, Enrollments, Devices, and Lesson
 Progress.
@@ -303,23 +303,22 @@ storage/CDN temporary URLs. Nuxt requests the temporary playback URL, restores a
 incomplete saved position, and persists bounded progress during playback, on
 pause, before lesson changes, and on completion.
 
-The interim production profile accepts only pre-compressed MP4 lesson videos
-up to 500 MB on the existing server. It retains protected, temporary local
-playback while HLS/transcoding remains deferred to the later delivery slice.
+The initial pre-compressed MP4 profile up to 500 MB was the interim delivery
+path before the production delivery slice was completed.
 
 ### Slice 2.2 — Production Private Delivery
 
-Status: **Planned**
+Status: **Completed**
 
-- Configure S3-compatible private storage and CDN delivery.
-- Generate short-lived playback authorization.
-- Add HLS processing and callback/status handling.
-- Apply the same protected pipeline to free and paid content unless a free
+- Private S3-compatible storage and CDN delivery are configured for production.
+- Playback authorization is short-lived and protected.
+- HLS processing and callback/status handling are available.
+- Free and paid content use the protected delivery pipeline unless a free
   Lesson is explicitly approved for public CDN access.
 
 ## Phase 3 — Real Payment Integrations
 
-Status: **In Progress**
+Status: **Completed**
 
 Dependencies: Phase 1 Orders, PaymentGateways, Payments, and Enrollments.
 
@@ -339,7 +338,7 @@ Implement one provider vertically before adding another provider.
 
 ### Slice 3.1 — Cash Payment Confirmation
 
-Status: **In Progress**
+Status: **Completed**
 
 - `cash` is an active normalized payment-gateway code and is resolved through
   `PaymentGatewayInterface` and `PaymentGatewayFactory`.
@@ -350,8 +349,7 @@ Status: **In Progress**
 - Confirmation atomically marks the Payment and Order paid and creates the
   payment-backed active Enrollment. The Payment stores the confirming User for
   financial audit history.
-- PostgreSQL migration is applied. Remaining before this slice can become
-  Completed: exercise the seeded/Postman Cash confirmation flow.
+- The seeded/Postman Cash confirmation flow has been exercised successfully.
 
 ### Slice 3.2 — Paymob Checkout and Webhook
 
@@ -366,16 +364,65 @@ Status: **Completed**
 
 ## Phase 4 — Learning Completion
 
-Status: **Planned**
+Status: **In Progress**
 
 Dependencies: Phase 1 Course content, Enrollment, and Lesson progress.
 
-Potential scope, implemented only after explicit approval:
+### Slice 4.1 — Manual Course Certificates
+
+Status: **In Progress**
+
+- An authorized administrator can manually issue one certificate for a Student
+  and Course; automatic eligibility is intentionally deferred.
+- Certificate issuance creates a PDF and immutable snapshots of the recipient
+  name and Course title, with a stable public verification code.
+- Public users can verify a certificate by its code and download its PDF.
+- Completion rules, quizzes, attempts, and automatic certificate issuance are
+  not part of this slice.
+
+Remaining before this slice can become Completed: apply and validate the
+PostgreSQL migration, exercise the Admin issuance and public verification flow,
+and synchronize Postman.
+
+### Certificate Frontend Delivery Plan
+
+The Nuxt web and administration client will be delivered only after the
+manual-certificate API slice is verified. The reviewed frontend already has an
+Admin sidebar and overview-card system, public Header/Home composition, a
+student Dashboard with account navigation, Pinia stores, feature Services, and
+localized Arabic/English dictionaries. Certificate UI must follow that existing
+architecture rather than introduce direct Axios calls from pages.
+
+- **Architecture and design conformance:** reuse the existing Nuxt route
+  layouts, Admin Sidebar, overview cards, page headers, data-table/state/action
+  components, student account navigation, Header/Home sections, alert wrapper,
+  design tokens, and responsive/RTL behavior. New certificate code follows the
+  established Page/Component → Pinia Store → Service → Axios Client pattern;
+  it must not introduce an independent visual system, duplicate components, or
+  direct page-level API calls.
+- **Admin:** add `/admin/certificates` to the existing navigation and overview;
+  its list, issuance form, PDF download, and regeneration action use a
+  Certificate Pinia Store and Service over the protected `/admin/certificates`
+  endpoints. Issue only submits `user_uuid` and `course_slug`; the backend owns
+  snapshots, issue time, code, and PDF data.
+- **Public web:** add a `Verify certificate` link to the site Header and a
+  compact verification call-to-action on Home. A public
+  `/verify-certificate` page accepts only the code and calls
+  `GET /certificates/{code}/verify`; a verified result may use the returned
+  public PDF URL. It must not imply that every learner has a certificate.
+- **Student area:** display a `My certificates` account destination and a
+  certificate card on a Course only after a dedicated ownership-scoped
+  certificate-list API is approved and implemented. The current public
+  verification endpoint is not a substitute for a private student list.
+- **Localization and accessibility:** all new labels and errors are paired in
+  `i18n/locales/ar.json` and `en.json`; Arabic/English names retain their
+  returned direction, verification input has an explicit label and status,
+  and download/regeneration controls expose loading and failure states.
+
+Potential later scope, implemented only after explicit approval:
 
 - Course completion rules.
 - Quizzes and attempts.
-- Completion certificates.
-- Certificate verification.
 
 ## Phase 5 — Administration and Platform Growth
 

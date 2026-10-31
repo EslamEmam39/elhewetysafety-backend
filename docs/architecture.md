@@ -48,6 +48,14 @@ Admin-only API routes are defined in `routes/admin.php`, imported by
 `routes/api.php`, and grouped under `/api/admin` with `auth:sanctum`,
 `not_banned`, and `role:admin` middleware.
 
+## Local Execution and Verification
+
+Run Laravel framework commands directly with the locally installed PHP runtime;
+do not use Docker Compose for normal development or verification unless it is
+explicitly requested. For example, use `php artisan route:list --path=api` and
+`php artisan migrate`. The local PHP runtime must use the configured PostgreSQL
+connection when migration validation requires a database.
+
 ## Controllers
 
 Controllers may receive validated FormRequests, read the authenticated user,
@@ -106,7 +114,8 @@ Payment and Order and atomically records Payment paid, Order paid, and a
 payment-backed Enrollment. Paymob creates its checkout Intention from the
 backend and accepts payment completion only through an HMAC-verified public
 server-to-server callback; the browser redirect is UX only. Fawry remains a
-separate provider implementation in Phase 3.
+separate future provider implementation and is not part of the completed
+Cash/Paymob payment scope.
 
 Enrollment access follows the standard feature pipeline. `EnrollmentService`
 owns free-course eligibility, idempotent access creation, and administrative
@@ -202,6 +211,17 @@ such as preventing self-ban even when a Policy has already authorized access.
 Controllers call the matching Policy ability before invoking Services, including
 custom operations such as ban, unban, role assignment, and permission
 synchronization.
+
+Certificate issuance follows the same flow. The Admin Certificate Controller
+validates public User and Course references, authorizes `CertificatePolicy`, and
+delegates PDF rendering, storage, snapshot creation, and persistence to
+`CertificateService`; `CertificateRepository` owns the queries. The public
+verification controller only resolves the stable Certificate code and returns
+its Resource or stored PDF. Certificate PDF rendering shapes Arabic snapshot
+text before Dompdf renders it, because PDF glyph embedding alone does not join
+Arabic letters or resolve right-to-left ordering. The same service can
+regenerate a stored PDF from immutable certificate snapshots after a template
+correction without changing the certificate record or verification code.
 
 ## Unified API Responses
 

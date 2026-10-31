@@ -202,6 +202,16 @@ use stable public codes while numeric IDs remain internal. Course aggregate
 values are queried from Lessons, Enrollments, and visible Reviews and are not
 stored as duplicated columns on Courses.
 
+## Certificates
+
+`certificates` is the historical User-to-Course certification relation. The
+unique `(user_id, course_id)` constraint prevents duplicate manual issues for
+the same pair. `code` is the stable public verification identifier; numeric IDs
+remain internal. Recipient names and Course title are intentional immutable
+snapshots, while `pdf_disk` and `pdf_storage_key` keep the generated artifact
+provider-neutral. Recipient, Course, and issuer foreign keys restrict deletion
+so issued certifications remain auditable.
+
 ## Transactions
 
 Use transactions for dependent writes. Verified payment completion must
@@ -210,5 +220,7 @@ must not leave a partially completed purchase or access state.
 
 ## PostgreSQL Verification
 
-Validate migrations against the PostgreSQL Docker service. Do not claim a
-migration is valid based only on SQLite or MySQL behavior.
+Validate migrations against the configured local PostgreSQL connection. Do not
+claim a migration is valid based only on SQLite or MySQL behavior. Run framework
+commands directly with the local PHP runtime unless Docker usage is explicitly
+requested.

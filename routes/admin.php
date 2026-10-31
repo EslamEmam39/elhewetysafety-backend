@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\Admin\Student\StudentController;
 use App\Http\Controllers\Api\Admin\User\UserController;
 use App\Http\Controllers\Api\Admin\User\UserModerationController;
 use App\Http\Controllers\Api\Admin\Video\LessonVideoController;
+use App\Http\Controllers\Api\Admin\Certificate\CertificateController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -119,6 +120,15 @@ Route::prefix('admin')->group(function () {
             Route::get('{courseReview:code}', [CourseReviewController::class, 'show']);
             Route::put('{courseReview:code}/hide', [CourseReviewController::class, 'hide']);
             Route::put('{courseReview:code}/publish', [CourseReviewController::class, 'publish']);
+        });
+
+        // Manual certificate issuance and administration.
+        Route::prefix('certificates')->group(function () {
+            Route::get('/', [CertificateController::class, 'index']);
+            Route::post('/', [CertificateController::class, 'store']);
+            Route::get('{certificate:code}', [CertificateController::class, 'show']);
+            Route::post('{certificate:code}/pdf/regenerate', [CertificateController::class, 'regeneratePdf']);
+            Route::get('{certificate:code}/pdf', [CertificateController::class, 'download']);
         });
 
     });

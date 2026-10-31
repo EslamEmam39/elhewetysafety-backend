@@ -18,6 +18,7 @@ use App\Models\Enrollment;
 use App\Models\PersonalAccessToken;
 use App\Models\Device;
 use App\Models\CourseReview;
+use App\Models\Certificate;
 use App\Observers\UserObserver;
 use App\Policies\CityPolicy;
 use App\Policies\CountryPolicy;
@@ -34,6 +35,7 @@ use App\Policies\PaymentPolicy;
 use App\Policies\EnrollmentPolicy;
 use App\Policies\DevicePolicy;
 use App\Policies\CourseReviewPolicy;
+use App\Policies\CertificatePolicy;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -74,6 +76,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Enrollment::class, EnrollmentPolicy::class);
         Gate::policy(Device::class, DevicePolicy::class);
         Gate::policy(CourseReview::class, CourseReviewPolicy::class);
+        Gate::policy(Certificate::class, CertificatePolicy::class);
 
         Event::listen(UserRegistered::class, QueueEmailVerificationOtp::class);
     }

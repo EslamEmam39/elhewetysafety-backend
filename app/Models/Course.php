@@ -37,4 +37,5 @@ class Course extends Model
     public function lessons(): HasManyThrough { return $this->hasManyThrough(Lesson::class, Chapter::class); }
     public function reviews(): HasMany { return $this->hasMany(CourseReview::class); }
     public function visibleReviews(): HasMany { return $this->reviews()->whereNull('hidden_at'); }
+    public function certificates(): HasMany { return $this->hasMany(Certificate::class); }
 }

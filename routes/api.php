@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\Video\LessonPlaybackController;
 use App\Http\Controllers\Api\Video\LessonVideoStreamController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Payment\PaymobWebhookController;
+use App\Http\Controllers\Api\Certificate\CertificateVerificationController;
 
 // Paymob sends a signed server-to-server callback. It must not require a student token.
 Route::post('payments/paymob/webhook', PaymobWebhookController::class)
@@ -102,6 +103,14 @@ Route::prefix('courses')->group(function () {
 Route::get('targeted-professional-fields', [TargetedProfessionalFieldController::class, 'index']);
 Route::get('course-categories', [CourseCategoryController::class, 'index']);
 Route::get('payment-gateways', [PaymentGatewayController::class, 'index']);
+
+// Public certificate verification and PDF download routes.
+Route::prefix('certificates')->group(function () {
+    Route::get('{certificate:code}/verify', [CertificateVerificationController::class, 'verify'])
+        ->name('certificates.verify');
+    Route::get('{certificate:code}/pdf', [CertificateVerificationController::class, 'download'])
+        ->name('certificates.pdf');
+});
 
 // Public location reference routes.
 Route::prefix('countries')->group(function () {

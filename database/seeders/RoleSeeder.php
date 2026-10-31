@@ -45,6 +45,8 @@ class RoleSeeder extends Seeder
             'devices.manage',
             'course-reviews.view',
             'course-reviews.manage',
+            'certificates.view',
+            'certificates.issue',
         ];
 
         $permissions = collect($permissionNames)

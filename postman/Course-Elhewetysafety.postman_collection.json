@@ -2356,6 +2356,59 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "Certificates",
+          "item": [
+            {
+              "name": "All",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json", "type": "text" }],
+                "url": { "raw": "{{local}}/admin/certificates", "host": ["{{local}}"], "path": ["admin", "certificates"] }
+              },
+              "response": []
+            },
+            {
+              "name": "Issue PDF Certificate",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Accept", "value": "application/json", "type": "text" },
+                  { "key": "Content-Type", "value": "application/json", "type": "text" }
+                ],
+                "body": { "mode": "raw", "raw": "{\"user_uuid\":\"{{student_uuid}}\",\"course_slug\":\"{{course_slug}}\"}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{local}}/admin/certificates", "host": ["{{local}}"], "path": ["admin", "certificates"] }
+              },
+              "response": []
+            },
+            {
+              "name": "Get",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Accept", "value": "application/json", "type": "text" }],
+                "url": { "raw": "{{local}}/admin/certificates/:certificate_code", "host": ["{{local}}"], "path": ["admin", "certificates", ":certificate_code"] }
+              },
+              "response": []
+            },
+            {
+              "name": "Regenerate PDF",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Accept", "value": "application/json", "type": "text" }],
+                "url": { "raw": "{{local}}/admin/certificates/:certificate_code/pdf/regenerate", "host": ["{{local}}"], "path": ["admin", "certificates", ":certificate_code", "pdf", "regenerate"] }
+              },
+              "response": []
+            },
+            {
+              "name": "Download PDF",
+              "request": {
+                "method": "GET",
+                "url": { "raw": "{{local}}/admin/certificates/:certificate_code/pdf", "host": ["{{local}}"], "path": ["admin", "certificates", ":certificate_code", "pdf"] }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -3578,6 +3631,28 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Certificates",
+      "item": [
+        {
+          "name": "Verify",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json", "type": "text" }],
+            "url": { "raw": "{{local}}/certificates/:certificate_code/verify", "host": ["{{local}}"], "path": ["certificates", ":certificate_code", "verify"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Download Verified PDF",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{local}}/certificates/:certificate_code/pdf", "host": ["{{local}}"], "path": ["certificates", ":certificate_code", "pdf"] }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "auth": {
@@ -3663,6 +3738,16 @@
     },
     {
       "key": "playback_url",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "student_uuid",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "certificate_code",
       "value": "",
       "type": "string"
     }
